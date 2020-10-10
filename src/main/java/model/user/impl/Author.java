@@ -1,8 +1,10 @@
-package model.user;
+package model.user.impl;
+
+import model.user.Person;
 
 import java.util.Date;
 
-public class Author extends Person{
+public class Author extends Person {
     private Date dateOfBirth;
     private Date dateOfDeath;
 

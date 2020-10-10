@@ -1,12 +1,15 @@
-package model.book;
+package model.book.impl;
 
 import enums.BookCategory;
 import enums.BookGenre;
-import model.user.Author;
+import model.book.Book;
+import model.book.Downloadable;
+import model.book.Electronic;
+import model.user.impl.Author;
 
 import java.util.List;
 
-public class DownloadableEBook extends Book implements Electronic, Downloadable{
+public class DownloadableEBook extends Book implements Electronic, Downloadable {
     private String onlineLink;
     private String downloadLink;
 

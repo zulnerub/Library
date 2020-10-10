@@ -2,7 +2,7 @@ package model.book;
 
 import enums.BookCategory;
 import enums.BookGenre;
-import model.user.Author;
+import model.user.impl.Author;
 
 import java.util.List;
 import java.util.stream.Collectors;

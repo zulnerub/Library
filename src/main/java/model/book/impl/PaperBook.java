@@ -1,12 +1,15 @@
-package model.book;
+package model.book.impl;
 
 import enums.BookCategory;
 import enums.BookGenre;
-import model.user.Author;
+import model.book.Book;
+import model.user.impl.Author;
+import model.user.impl.User;
 
 import java.util.List;
+import java.util.Queue;
 
-public class PaperBook extends Book{
+public class PaperBook extends Book {
     private int currentlyAvailable;
     private int totalCopies;
     private boolean isInStock;
