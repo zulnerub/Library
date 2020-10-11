@@ -8,10 +8,9 @@ import repository.UserRepository;
 import java.util.regex.Pattern;
 
 public class UserController {
-    private final UserRepository userrepository;
+    private final UserRepository userrepository = new UserRepository();
 
-    public UserController(UserRepository userrepository) {
-        this.userrepository = userrepository;
+    public UserController() {
     }
 
     public boolean validateCredentials(String username, String password) {
@@ -22,6 +21,10 @@ public class UserController {
         }
 
         return false;
+    }
+
+    public User getUserByUsername(String username){
+        return userrepository.getUser(username);
     }
 
     public String registerUser(String username, String password, boolean GDPR,

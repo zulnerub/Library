@@ -15,6 +15,13 @@ public class UserRepository {
         users.add(user);
     }
 
+    public User getUser(String username){
+        return users.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
     public List<User> getAllUsers(){
         return users;
     }
