@@ -5,6 +5,10 @@ import model.common.Address;
 import model.common.History;
 import model.user.Person;
 
+/**
+ * Contains information about a real person - Name, age, gender.
+ * Also stores the users credentials for authentication and history.
+ */
 public class User extends Person {
     private Address location;
     private Gender gender;
@@ -32,11 +36,17 @@ public class User extends Person {
         this.age = age;
     }
 
-    public String getUsername(){
+    /**
+     * @return Get the username of the user.
+     */
+    public String getUsername() {
         return username;
     }
 
-    public String getPassword(){
+    /**
+     * @return Get the password of the user.
+     */
+    public String getPassword() {
         return password;
     }
 }

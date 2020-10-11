@@ -4,6 +4,10 @@ import model.user.Person;
 
 import java.util.Date;
 
+/**
+ * Creates an object Author to complement the Book objects.
+ * Stores Dates of birth and death as well as common fields and methods from Person
+ */
 public class Author extends Person {
     private Date dateOfBirth;
     private Date dateOfDeath;
@@ -14,15 +18,24 @@ public class Author extends Person {
         this.dateOfDeath = dateOfDeath;
     }
 
+    /**
+     * @return Get the date of birth of the author.
+     */
     public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public Date getDateOfDeath(){
+    /**
+     * @return Get the date of death of the author.
+     */
+    public Date getDateOfDeath() {
         return dateOfDeath;
     }
 
-    public void setDateOfDeath(Date dateOfDeath){
+    /**
+     * @param dateOfDeath Set date of death when author was alive when the book was created.
+     */
+    public void setDateOfDeath(Date dateOfDeath) {
         this.dateOfDeath = dateOfDeath;
     }
 }
