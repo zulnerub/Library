@@ -8,7 +8,7 @@ import model.user.Person;
 public class User extends Person {
     private Address location;
     private Gender gender;
-    private History history;
+    private History history = new History();
     private String username;
     private String password;
     private String email;
@@ -16,15 +16,27 @@ public class User extends Person {
     private int age;
 
 
-    public User(String firstName, String lastName, Address location, Gender gender, History history, String username, String password, String email, boolean gdpr, int age) {
+    public User(String firstName, String lastName,
+                Address location, Gender gender,
+                String username, String password,
+                String email,
+                boolean gdpr,
+                int age) {
         super(firstName, lastName);
         this.location = location;
         this.gender = gender;
-        this.history = history;
         this.username = username;
         this.password = password;
         this.email = email;
         GDPR = gdpr;
         this.age = age;
+    }
+
+    public String getUsername(){
+        return username;
+    }
+
+    public String getPassword(){
+        return password;
     }
 }
