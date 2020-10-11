@@ -1,5 +1,8 @@
 package enums;
 
+/**
+ * Enumeration with a parameter simpleName to represent the Genres of a book.
+ */
 public enum BookGenre {
     DRAMA("drama"),
     HORROR("horror"),
@@ -13,6 +16,9 @@ public enum BookGenre {
         simpleName = genreName;
     }
 
+    /**
+     * @return String representation of the name of the genre.
+     */
     public String getSimpleName() {
         return simpleName;
     }

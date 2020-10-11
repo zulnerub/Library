@@ -1,5 +1,8 @@
 package enums;
 
+/**
+ * Enumeration with parameter simpleName to represent the Categories of a book.
+ */
 public enum BookCategory {
     CHILDREN("children"),
     STORY("story"),
@@ -12,6 +15,9 @@ public enum BookCategory {
         simpleName = categoryName;
     }
 
+    /**
+     * @return String representation of the name of the category.
+     */
     public String getSimpleName() {
         return simpleName;
     }
