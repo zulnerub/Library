@@ -8,6 +8,9 @@ import model.user.impl.Author;
 
 import java.util.List;
 
+/**
+ * Object that represents an online book with possibility to be read online.
+ */
 public class EBook extends Book implements Electronic {
     private String onlineLink;
 
@@ -20,6 +23,9 @@ public class EBook extends Book implements Electronic {
         this.onlineLink = onlineLink;
     }
 
+    /**
+     * @return String representation of the book's link for online reading.
+     */
     @Override
     public String getOnlineLink() {
         return onlineLink;

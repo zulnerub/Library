@@ -7,6 +7,10 @@ import model.user.impl.Author;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract class to provide partial implementation for PaperBook, EBook, DownloadableEBook.
+ * Contains common methods for all three classes.
+ */
 public abstract class Book {
     private String ISBN;
     private String title;
@@ -27,17 +31,26 @@ public abstract class Book {
         this.categories = categories;
     }
 
-    public String getTitle(){
+    /**
+     * @return The title of the Book - String.
+     */
+    public String getTitle() {
         return title;
     }
 
-    public List<String> getCategoriesNames(){
+    /**
+     * @return A list of the book's category names.
+     */
+    public List<String> getCategoriesNames() {
         return categories.stream()
                 .map(BookCategory::getSimpleName)
                 .collect(Collectors.toList());
     }
 
-    public List<String> getGenreNames(){
+    /**
+     * @return A list of the book's genre names.
+     */
+    public List<String> getGenreNames() {
         return genres.stream()
                 .map(BookGenre::getSimpleName)
                 .collect(Collectors.toList());

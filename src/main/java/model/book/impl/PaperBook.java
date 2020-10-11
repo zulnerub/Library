@@ -9,6 +9,10 @@ import model.user.impl.User;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * An Object that emulates a paper book, containing number of copies in stock.
+ * And other atributes characteristic for a real book like - isbn, author/s, title, summary etc.
+ */
 public class PaperBook extends Book {
     private int currentlyAvailable;
     private int totalCopies;

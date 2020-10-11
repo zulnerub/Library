@@ -9,6 +9,9 @@ import model.user.impl.Author;
 
 import java.util.List;
 
+/**
+ * Object that represents an online book with possibility to be read and downloaded.
+ */
 public class DownloadableEBook extends Book implements Electronic, Downloadable {
     private String onlineLink;
     private String downloadLink;
@@ -22,11 +25,17 @@ public class DownloadableEBook extends Book implements Electronic, Downloadable 
         this.downloadLink = downloadLink;
     }
 
+    /**
+     * @return String representation of the book's download link.
+     */
     @Override
     public String getDownLoadLink() {
         return downloadLink;
     }
 
+    /**
+     * @return String representation of the book's link for online reading.
+     */
     @Override
     public String getOnlineLink() {
         return onlineLink;
