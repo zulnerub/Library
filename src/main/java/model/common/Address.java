@@ -1,5 +1,8 @@
 package model.common;
 
+/**
+ * This is an object containing parameters of a real address - street, city, country.
+ */
 public class Address {
     private String country;
     private String city;
@@ -11,26 +14,44 @@ public class Address {
         this.street = street;
     }
 
-    public String getFullAddress(){
+    /**
+     * @return Retrieves the fields of the class formatted to a String showing the full address.
+     */
+    public String getFullAddress() {
         return street + ", " + city + ", " + country;
     }
 
-    public String getShortAddress(){
+    /**
+     * @return Retrieves the street field to show only a part of the address.
+     */
+    public String getShortAddress() {
         return street;
     }
 
-    public boolean isAddressValid(){
+    /**
+     * @return true if all of the address fields are valid otherwise - false.
+     */
+    public boolean isAddressValid() {
         return isCountryValid() && isCityValid() && isStreetValid();
     }
 
+    /**
+     * @return true if street is not null, empty or blank, otherwise - false.
+     */
     private boolean isStreetValid() {
         return street != null && !street.isBlank();
     }
 
+    /**
+     * @return true if city is not null, empty or blank, otherwise - false.
+     */
     private boolean isCityValid() {
         return city != null && !city.isBlank();
     }
 
+    /**
+     * @return true if country is not null, empty or blank, otherwise - false.
+     */
     private boolean isCountryValid() {
         return country != null && !country.isBlank();
     }
