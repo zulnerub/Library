@@ -126,7 +126,7 @@ public class BookRepository {
      * @param username Unique identifier of the user.
      * @param ISBN     Unique identifier of the book.
      */
-    public void registerBorrowedBook(String username, String ISBN) {
+    private void registerBorrowedBook(String username, String ISBN) {
         usersWithBorrowedBooks.putIfAbsent(username, new HashMap<>());
         usersWithBorrowedBooks.get(username)
                 .put(ISBN, new LocalDate[]{
