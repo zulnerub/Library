@@ -1,3 +1,4 @@
+import controller.BookController;
 import controller.UserController;
 import exception.CustomException;
 import model.user.impl.User;
@@ -12,13 +13,12 @@ import java.util.List;
  * Main class of the application where the starting and initialization of the application occurs.
  */
 public class Application {
-    private static BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    private static final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) {
-
-
         List<User> loggedUsers = new ArrayList<>();
         UserController userController = new UserController();
+        BookController bookController = new BookController();
 
         String username = getUserInput();
         String password = getUserInput();

@@ -2,10 +2,15 @@ package controller;
 
 import enums.BookCategory;
 import enums.BookGenre;
+import model.book.impl.DownloadableEBook;
+import model.book.impl.EBook;
+import model.book.impl.PaperBook;
 import model.user.impl.Author;
 import repository.BookRepository;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Creates connection between the user and the book repository.
@@ -16,6 +21,112 @@ public class BookController {
     private final BookRepository bookRepository = new BookRepository();
 
     public BookController() {
+    }
+
+    /**
+     * Validates the provided input by calling methods to validate each parameter separately.
+     * If all are valid creates an DownloadableEBook and adds it to the repository.
+     *
+     * @param bookISBN       String representation of unique book identifier.
+     * @param bookTitle      Name of the book.
+     * @param summary        Short info about what the book is about.
+     * @param authors        A list of one or more authors.
+     * @param bookGenres     A list of one or more book genres.
+     * @param bookCategories A list of one or more book categories.
+     * @param readLink       String representation of the link where the book can be read.
+     * @param downloadLink   String representing the link where the book can be downloaded from.
+     * @return Message describing whether the operation was successful or not.
+     */
+    public String addDownloadableEBook(String bookISBN, String bookTitle, String summary,
+                                       List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                                       String readLink, String downloadLink) {
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isLinkValid(readLink) && isLinkValid(downloadLink)) {
+            DownloadableEBook newDownloadableEBook = new DownloadableEBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+                    readLink, downloadLink);
+
+            bookRepository.addBookToLibrary(newDownloadableEBook);
+
+            return "Book: " + bookTitle + " added successfully to library.";
+        }
+
+        return "Adding book failed.";
+    }
+
+    /**
+     * Validates the provided input by calling methods to validate each parameter separately.
+     * If all are valid creates an EBook and adds it to the repository.
+     *
+     * @param bookISBN       String representation of unique book identifier.
+     * @param bookTitle      Name of the book.
+     * @param summary        Short info about what the book is about.
+     * @param authors        A list of one or more authors.
+     * @param bookGenres     A list of one or more book genres.
+     * @param bookCategories A list of one or more book categories.
+     * @param readLink       String representation of the link where the book can be read.
+     * @return Message describing whether the operation was successful or not.
+     */
+    public String addEBook(String bookISBN, String bookTitle, String summary,
+                           List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                           String readLink) {
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isLinkValid(readLink)) {
+            EBook newEBook = new EBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+                    readLink);
+
+            bookRepository.addBookToLibrary(newEBook);
+
+            return "Book: " + bookTitle + " added successfully to library.";
+        }
+
+        return "Adding book failed.";
+    }
+
+    /**
+     * Validates the link with a regular expression for links.
+     *
+     * @param bookLink String representation of a link.
+     * @return true if the link matches the regexp or false if doesn't.
+     */
+    private boolean isLinkValid(String bookLink) {
+        return Pattern.matches("^(http)(s)*://(www.)*([a-z0-9]+.)+[a-z]+(:[0-9]{1,4})*", bookLink);
+    }
+
+    /**
+     * Validates the provided input for creating a paper book if data is valid
+     * adds the book to the library and returns a success message, otherwise
+     * - failure message.
+     *
+     * @param bookISBN       String representation of unique book identifier.
+     * @param bookTitle      Name of the book.
+     * @param summary        Short info about what the book is about.
+     * @param authors        A list of one or more authors.
+     * @param bookGenres     A list of one or more book genres.
+     * @param bookCategories A list of one or more book categories.
+     * @param totalCopies    Amount of copies added to the library.
+     * @return Message saying the book was added on success or saying that the process has failed.
+     */
+    public String addPaperBook(String bookISBN, String bookTitle, String summary,
+                               List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                               int totalCopies) {
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isTotalCopiesValid(totalCopies)) {
+            PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+                    totalCopies, totalCopies, true, new ArrayDeque<>());
+
+            bookRepository.addBookToLibrary(newPaperBook);
+
+            return "Book: " + bookTitle + " added successfully to library.";
+        }
+
+        return "Adding book failed.";
+    }
+
+    /**
+     * Validates that the book to be added has at least one copy.
+     *
+     * @param totalCopies Represents the initial copies of the book when added to the library. Must be greater than one.
+     * @return true if input's value is greater than zero, otherwise - false.
+     */
+    private boolean isTotalCopiesValid(int totalCopies) {
+        return totalCopies > 0;
     }
 
     /**
@@ -31,8 +142,8 @@ public class BookController {
      * @return true if all parameters are valid, otherwise on the first invalid operator
      * prints error message and returns false.
      */
-    public boolean isBookValid(String bookISBN, String bookTitle, String summary,
-                               List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories) {
+    private boolean isBookValid(String bookISBN, String bookTitle, String summary,
+                                List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories) {
         if (!isISBNValid(bookISBN)) {
             System.out.println(("The provided ISBN was not valid. " +
                     "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'."));
@@ -143,6 +254,16 @@ public class BookController {
                 }
             }
         }
+
+        boolean ISBNAlreadyExists = bookRepository
+                .getAllBooksInLibrary()
+                .stream()
+                .anyMatch(book -> book.getISBN().equals(bookISBN.trim()));
+
+        if (ISBNAlreadyExists) {
+            result = false;
+        }
+
         return result;
     }
 
