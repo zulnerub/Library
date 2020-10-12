@@ -32,6 +32,13 @@ public abstract class Book {
     }
 
     /**
+     * @return Get the unique identifier of a book - ISBN.
+     */
+    public String getISBN() {
+        return ISBN;
+    }
+
+    /**
      * @return The title of the Book - String.
      */
     public String getTitle() {

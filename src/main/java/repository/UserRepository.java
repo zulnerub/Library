@@ -2,8 +2,7 @@ package repository;
 
 import model.user.impl.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Has the role of containing all the registered users and execute simple operations like:
@@ -13,7 +12,7 @@ import java.util.List;
  * - etc.
  */
 public class UserRepository {
-    private List<User> users = new ArrayList<>();
+    private final Map<String, User> users = new HashMap<>();
 
     public UserRepository() {
     }
@@ -24,7 +23,7 @@ public class UserRepository {
      * @param user Object of type User validated in advance.
      */
     public void addUser(User user) {
-        users.add(user);
+        users.putIfAbsent(user.getUsername(), user);
     }
 
     /**
@@ -34,16 +33,18 @@ public class UserRepository {
      * @return if found returns the found User otherwise - null.
      */
     public User getUser(String username) {
-        return users.stream()
-                .filter(user -> user.getUsername().equals(username))
+        String foundUsername = users.keySet().stream()
+                .filter(uName -> uName.equals(username))
                 .findFirst()
                 .orElse(null);
+
+        return foundUsername != null ? users.get(foundUsername) : null;
     }
 
     /**
      * @return Gets all the users in the repository.
      */
     public List<User> getAllUsers() {
-        return users;
+        return new ArrayList<>(users.values());
     }
 }
