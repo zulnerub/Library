@@ -17,7 +17,7 @@ public class PaperBook extends Book {
     private int currentlyAvailable;
     private int totalCopies;
     private boolean isInStock;
-    private Queue<User> offeredCopiesToUsers;
+    private Queue<String> usersWaiting;
 
 
     public PaperBook(String ISBN, String title, String summary,
@@ -25,11 +25,27 @@ public class PaperBook extends Book {
                      List<BookGenre> genres,
                      List<BookCategory> categories,
                      int currentlyAvailable, int totalCopies,
-                     boolean isInStock, Queue<User> offeredCopiesToUsers) {
+                     boolean isInStock, Queue<String> offeredCopiesToUsers) {
         super(ISBN, title, summary, authors, genres, categories);
         this.currentlyAvailable = currentlyAvailable;
         this.totalCopies = totalCopies;
         this.isInStock = isInStock;
-        this.offeredCopiesToUsers = offeredCopiesToUsers;
+        this.usersWaiting = offeredCopiesToUsers;
+    }
+
+    public boolean isAvailable(){
+        return isInStock;
+    }
+
+    public int amountOfFreeCopies(){
+        return currentlyAvailable;
+    }
+
+    public void changeAmountOfFreeCopies(int amount){
+        currentlyAvailable += amount;
+    }
+
+    public Queue<String> getUsersInQueue(){
+        return usersWaiting;
     }
 }
