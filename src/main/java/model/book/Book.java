@@ -62,4 +62,11 @@ public abstract class Book {
                 .map(BookGenre::getSimpleName)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @return A list of the book's authors.
+     */
+    public List<Author> getAuthors() {
+        return authors;
+    }
 }

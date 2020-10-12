@@ -2,6 +2,7 @@ package controller;
 
 import enums.BookCategory;
 import enums.BookGenre;
+import model.book.Book;
 import model.book.impl.DownloadableEBook;
 import model.book.impl.EBook;
 import model.book.impl.PaperBook;
@@ -9,8 +10,10 @@ import model.user.impl.Author;
 import repository.BookRepository;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Creates connection between the user and the book repository.
@@ -21,6 +24,63 @@ public class BookController {
     private final BookRepository bookRepository = new BookRepository();
 
     public BookController() {
+    }
+
+    /**
+     * Searches for books where at least one of the authors has full name that contains the provided string.
+     *
+     * @param fullNameContaining A string to search for in the author's full name (firstName + " " + lastName).
+     * @return List of found books or an empty list if nothing matched the search parameters.
+     */
+    public List<Book> searchBookByAuthorsFullName(String fullNameContaining) {
+        if (!isStringValid(fullNameContaining)) {
+            return new ArrayList<>();
+        }
+
+        List<Book> foundBooks = bookRepository.getAllBooksInLibrary().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author -> author.getFullName().contains(fullNameContaining)))
+                .collect(Collectors.toList());
+
+        return !foundBooks.isEmpty() ? foundBooks : new ArrayList<>();
+    }
+
+    /**
+     * Searches for books where at least one of the authors has last name that contains the provided string.
+     *
+     * @param lastNameContaining A string to search for in the author's lastNames.
+     * @return List of found books or an empty list if nothing matched the search parameters.
+     */
+    public List<Book> searchBookByAuthorsLastName(String lastNameContaining) {
+        if (!isStringValid(lastNameContaining)) {
+            return new ArrayList<>();
+        }
+
+        List<Book> foundBooks = bookRepository.getAllBooksInLibrary().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author -> author.getLastName().contains(lastNameContaining)))
+                .collect(Collectors.toList());
+
+        return !foundBooks.isEmpty() ? foundBooks : new ArrayList<>();
+    }
+
+    /**
+     * Searches for books where at least one of the authors has first name that contains the provided string.
+     *
+     * @param firstNameContaining A string to search for in the author's firstNames.
+     * @return List of found books or an empty list if nothing matched the search parameters.
+     */
+    public List<Book> searchBookByAuthorsFirstName(String firstNameContaining) {
+        if (!isStringValid(firstNameContaining)) {
+            return new ArrayList<>();
+        }
+
+        List<Book> foundBooks = bookRepository.getAllBooksInLibrary().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author -> author.getFirstName().contains(firstNameContaining)))
+                .collect(Collectors.toList());
+
+        return !foundBooks.isEmpty() ? foundBooks : new ArrayList<>();
     }
 
     /**
