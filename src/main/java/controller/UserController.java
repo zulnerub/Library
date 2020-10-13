@@ -110,8 +110,8 @@ public class UserController {
             result = false;
         }
 
-        if (isNameInvalid(firstName) || !isNameInvalid(lastName)) {
-            System.out.println("The specified first and last name must be long at least 8 symbols each.");
+        if (isNameInvalid(firstName) || isNameInvalid(lastName)) {
+            System.out.println("The specified first and last name must be long at least 2 symbols each.");
             result = false;
         }
 
@@ -143,7 +143,7 @@ public class UserController {
      * @return true if user complies or false if not.
      */
     private boolean isNotGDPRCompliant(boolean gdpr) {
-        return gdpr;
+        return !gdpr;
     }
 
     /**
@@ -163,7 +163,7 @@ public class UserController {
      * @return true if parameter is valid or false if not valid.
      */
     private boolean isGenreInvalid(Gender gender) {
-        return !gender.name().equals("m") && !gender.name().equals("f");
+        return !gender.name().equalsIgnoreCase("male") && !gender.name().equalsIgnoreCase("female");
     }
 
     /**
@@ -217,7 +217,7 @@ public class UserController {
      * or false if any of the above are not met.
      */
     private boolean isUsernameInvalid(String username) {
-        return !isStringInputValid(username) || username.length() <= 7 && userAlreadyExists(username);
+        return !isStringInputValid(username) || username.length() < 2 && userAlreadyExists(username);
     }
 
     /**
