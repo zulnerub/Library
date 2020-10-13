@@ -177,12 +177,15 @@ public class BookRepository {
     }
 
     /**
-     * Receive an object of type Book and add it to the library.
+     * Receive an object of type Book and add it to the library
+     * if the object is not null.
      *
      * @param book Object of type book.
      */
     public void addBookToLibrary(Book book) {
-        books.putIfAbsent(book.getISBN(), book);
+        if (book != null) {
+            books.putIfAbsent(book.getISBN(), book);
+        }
     }
 
     /**

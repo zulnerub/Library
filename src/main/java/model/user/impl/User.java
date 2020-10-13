@@ -32,7 +32,7 @@ public class User extends Person {
         this.username = username;
         this.password = password;
         this.email = email;
-        GDPR = gdpr;
+        this.GDPR = gdpr;
         this.age = age;
     }
 

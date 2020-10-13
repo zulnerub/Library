@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Operates on the user repository.
  */
 public class UserController {
-    private final UserRepository userrepository = new UserRepository();
+    private final UserRepository userRepository = new UserRepository();
 
     /**
      * Provides a check if a user with that username is already registered and
@@ -40,7 +40,7 @@ public class UserController {
      * @return The found user or null if user does n't exist.
      */
     public User getUserByUsername(String username) {
-        return userrepository.getUser(username);
+        return userRepository.getUser(username);
     }
 
     /**
@@ -67,38 +67,38 @@ public class UserController {
             return "Please consent to the GDPR agreement.";
         }
 
-        if (!isUsernameValid(username)) {
+        if (isUserInvalid(username)) {
             return "Username is not valid. Username must be at least 8 symbols long.";
         }
 
-        if (!isPasswordValid(password)) {
+        if (isPasswordInvalid(password)) {
             return "Password is not invalid. Password must be at least 5 symbols long";
         }
 
-        if (!isNameValid(firstName) || !isNameValid(lastName)) {
+        if (isNameInvalid(firstName) || !isNameInvalid(lastName)) {
             return "The specified first and last name must be long at least 8 symbols each.";
         }
 
-        if (!isAgeValid(age)) {
+        if (isAgeInvalid(age)) {
             return "Specified age must be between 6 and 125 - excluded.";
         }
 
-        if (!isGenderValid(gender)) {
+        if (isGenreInvalid(gender)) {
             return "The provided options for gender are: 'm' or 'f'.";
         }
 
-        if (!isAddressValid(address)) {
+        if (isAddressInvalid(address)) {
             return "Please provide a valid address. Fields must be non empty.";
         }
 
-        if (!isEmailValid(email)) {
+        if (isEmailInvalid(email)) {
             return "Please provide a valid email.";
         }
 
         User user = new User(firstName, lastName, address,
                 gender, username, password, email, GDPR, age);
 
-        userrepository.addUser(user);
+        userRepository.addUser(user);
 
         return "User " + username + " registered Successfully.";
     }
@@ -109,8 +109,8 @@ public class UserController {
      * @param address Object of type Address.
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isAddressValid(Address address) {
-        return address.isAddressValid();
+    private boolean isAddressInvalid(Address address) {
+        return !address.isAddressValid();
     }
 
     /**
@@ -119,8 +119,8 @@ public class UserController {
      * @param gender Enum of type Gender.
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isGenderValid(Gender gender) {
-        return gender.name().equals("m") || gender.name().equals("f");
+    private boolean isGenreInvalid(Gender gender) {
+        return !gender.name().equals("m") && !gender.name().equals("f");
     }
 
     /**
@@ -129,8 +129,8 @@ public class UserController {
      * @param email String representation of the user's email.
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isEmailValid(String email) {
-        return Pattern.matches(
+    private boolean isEmailInvalid(String email) {
+        return !Pattern.matches(
                 "^[a-z][a-zA-Z0-9_.]*@([a-z][a-zA-Z0-9_]*(\\.))+[a-zA-Z]+", email);
     }
 
@@ -140,8 +140,8 @@ public class UserController {
      * @param name String input from the console.
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isNameValid(String name) {
-        return isStringInputValid(name) && name.trim().length() > 1 && name.trim().length() <= 20;
+    private boolean isNameInvalid(String name) {
+        return !isStringInputValid(name) || name.trim().length() <= 1 || name.trim().length() > 20;
     }
 
     /**
@@ -150,8 +150,8 @@ public class UserController {
      * @param age int value of the users age
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isAgeValid(int age) {
-        return age > 6 && age < 125;
+    private boolean isAgeInvalid(int age) {
+        return age <= 6 || age > 125;
     }
 
     /**
@@ -161,8 +161,8 @@ public class UserController {
      * @param password String value from the console.
      * @return true if parameter is valid or false if not valid.
      */
-    private boolean isPasswordValid(String password) {
-        return isStringInputValid(password) && password.length() > 4;
+    private boolean isPasswordInvalid(String password) {
+        return !isStringInputValid(password) || password.length() <= 4;
     }
 
     /**
@@ -173,8 +173,12 @@ public class UserController {
      * @return true if there is no user with that name, and the string is valid and over 7 symbols long.
      * or false if any of the above are not met.
      */
-    private boolean isUsernameValid(String username) {
-        return isStringInputValid(username) && username.length() > 7 && getUser(username) == null;
+    private boolean isUserInvalid(String username) {
+        return !isStringInputValid(username) || username.length() <= 7 && userAlreadyExists(username);
+    }
+
+    private boolean userAlreadyExists(String username) {
+        return getUser(username) != null;
     }
 
     /**
@@ -194,7 +198,7 @@ public class UserController {
      * @return User if such exist with that username or null.
      */
     private User getUser(String username) {
-        return userrepository.getAllUsers()
+        return userRepository.getAllUsers()
                 .stream()
                 .filter(user -> user.getUsername().equals(username))
                 .findFirst()

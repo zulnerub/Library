@@ -15,12 +15,21 @@ public class UserRepository {
     private final Map<String, User> users = new HashMap<>();
 
     /**
-     * Adds a User object to the collection of users.
+     * Adds a user to the user repository if username is not taken.
      *
-     * @param user Object of type User validated in advance.
+     * @param user Unique identifier for the user.
+     * @return Message explaining the action that was taken.
      */
-    public void addUser(User user) {
-        users.putIfAbsent(user.getUsername(), user);
+    public String addUser(User user) {
+        String currentUsername = user.getUsername();
+
+        if (users.containsKey(currentUsername)) {
+            return "User with username " + currentUsername + " already exists";
+        }
+
+        users.putIfAbsent(currentUsername, user);
+
+        return "User with username " + currentUsername + " was created.";
     }
 
     /**
@@ -30,12 +39,7 @@ public class UserRepository {
      * @return if found returns the found User otherwise - null.
      */
     public User getUser(String username) {
-        String foundUsername = users.keySet().stream()
-                .filter(uName -> uName.equals(username))
-                .findFirst()
-                .orElse(null);
-
-        return foundUsername != null ? users.get(foundUsername) : null;
+        return users.get(username);
     }
 
     /**

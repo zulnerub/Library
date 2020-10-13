@@ -4,7 +4,6 @@ import enums.BookCategory;
 import enums.BookGenre;
 import model.book.Book;
 import model.user.impl.Author;
-import model.user.impl.User;
 
 import java.util.List;
 import java.util.Queue;
@@ -18,7 +17,6 @@ public class PaperBook extends Book {
     private int totalCopies;
     private boolean isInStock;
     private Queue<String> usersWaiting;
-
 
     public PaperBook(String ISBN, String title, String summary,
                      List<Author> authors,
