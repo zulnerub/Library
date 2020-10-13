@@ -1,6 +1,6 @@
 package model.book.impl;
 
-import enums.BookCategory;
+import enums.BookTags;
 import enums.BookGenre;
 import model.book.Book;
 import model.book.Downloadable;
@@ -19,9 +19,9 @@ public class DownloadableEBook extends Book implements Electronic, Downloadable 
 
     public DownloadableEBook(String ISBN, String title, String summary,
                              List<Author> authors,
-                             List<BookGenre> genres,
-                             List<BookCategory> categories, String onlineLink, String downloadLink) {
-        super(ISBN, title, summary, authors, genres, categories);
+                             BookGenre genre,
+                             List<BookTags> categories, String onlineLink, String downloadLink) {
+        super(ISBN, title, summary, authors, genre, categories);
         this.onlineLink = onlineLink;
         this.downloadLink = downloadLink;
     }

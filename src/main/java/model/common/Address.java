@@ -16,20 +16,6 @@ public class Address {
     }
 
     /**
-     * @return Retrieves the fields of the class formatted to a String showing the full address.
-     */
-    public String getFullAddress() {
-        return street + ", " + city + ", " + country;
-    }
-
-    /**
-     * @return Retrieves the street field to show only a part of the address.
-     */
-    public String getShortAddress() {
-        return street;
-    }
-
-    /**
      * @return true if all of the address fields are valid otherwise - false.
      */
     public boolean isAddressValid() {

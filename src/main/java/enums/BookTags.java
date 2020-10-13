@@ -3,7 +3,7 @@ package enums;
 /**
  * Enumeration with parameter simpleName to represent the Categories of a book.
  */
-public enum BookCategory {
+public enum BookTags {
 
     CHILDREN("children"),
     STORY("story"),
@@ -12,7 +12,7 @@ public enum BookCategory {
 
     String simpleName;
 
-    BookCategory(String categoryName) {
+    BookTags(String categoryName) {
         simpleName = categoryName;
     }
 

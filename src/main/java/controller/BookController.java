@@ -1,6 +1,6 @@
 package controller;
 
-import enums.BookCategory;
+import enums.BookTags;
 import enums.BookGenre;
 import model.book.Book;
 import model.book.impl.DownloadableEBook;
@@ -10,6 +10,7 @@ import model.user.impl.Author;
 import repository.BookRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -88,17 +89,17 @@ public class BookController {
      * @param bookTitle      Name of the book.
      * @param summary        Short info about what the book is about.
      * @param authors        A list of one or more authors.
-     * @param bookGenres     A list of one or more book genres.
-     * @param bookCategories A list of one or more book categories.
+     * @param bookGenre     A list of one or more book genres.
+     * @param bookTags A list of one or more book categories.
      * @param readLink       String representation of the link where the book can be read.
      * @param downloadLink   String representing the link where the book can be downloaded from.
      * @return Message describing whether the operation was successful or not.
      */
     public String addDownloadableEBook(String bookISBN, String bookTitle, String summary,
-                                       List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                                       List<Author> authors, BookGenre bookGenre, List<BookTags> bookTags,
                                        String readLink, String downloadLink) {
-        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isLinkValid(readLink) && isLinkValid(downloadLink)) {
-            DownloadableEBook newDownloadableEBook = new DownloadableEBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenre, bookTags) && isLinkValid(readLink) && isLinkValid(downloadLink)) {
+            DownloadableEBook newDownloadableEBook = new DownloadableEBook(bookISBN, bookTitle, summary, authors, bookGenre, bookTags,
                     readLink, downloadLink);
 
             bookRepository.addBookToLibrary(newDownloadableEBook);
@@ -117,16 +118,16 @@ public class BookController {
      * @param bookTitle      Name of the book.
      * @param summary        Short info about what the book is about.
      * @param authors        A list of one or more authors.
-     * @param bookGenres     A list of one or more book genres.
-     * @param bookCategories A list of one or more book categories.
+     * @param bookGenre     A list of one or more book genres.
+     * @param bookTags A list of one or more book categories.
      * @param readLink       String representation of the link where the book can be read.
      * @return Message describing whether the operation was successful or not.
      */
     public String addEBook(String bookISBN, String bookTitle, String summary,
-                           List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                           List<Author> authors, BookGenre bookGenre, List<BookTags> bookTags,
                            String readLink) {
-        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isLinkValid(readLink)) {
-            EBook newEBook = new EBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenre, bookTags) && isLinkValid(readLink)) {
+            EBook newEBook = new EBook(bookISBN, bookTitle, summary, authors, bookGenre, bookTags,
                     readLink);
 
             bookRepository.addBookToLibrary(newEBook);
@@ -156,16 +157,16 @@ public class BookController {
      * @param bookTitle      Name of the book.
      * @param summary        Short info about what the book is about.
      * @param authors        A list of one or more authors.
-     * @param bookGenres     A list of one or more book genres.
+     * @param bookGenre     A list of one or more book genres.
      * @param bookCategories A list of one or more book categories.
      * @param totalCopies    Amount of copies added to the library.
      * @return Message saying the book was added on success or saying that the process has failed.
      */
     public String addPaperBook(String bookISBN, String bookTitle, String summary,
-                               List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
+                               List<Author> authors, BookGenre bookGenre, List<BookTags> bookCategories,
                                int totalCopies) {
-        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && areCopiesAtLeastOne(totalCopies)) {
-            PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenre, bookCategories) && areCopiesAtLeastOne(totalCopies)) {
+            PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenre, bookCategories,
                     totalCopies, totalCopies);
 
             bookRepository.addBookToLibrary(newPaperBook);
@@ -194,13 +195,13 @@ public class BookController {
      * @param bookTitle      String representation of the title of the book.
      * @param summary        Short info describing the book.
      * @param authors        List of objects of type Author with length at least one.
-     * @param bookGenres     List of objects of type BookGenre with length at least one.
+     * @param bookGenre     List of objects of type BookGenre with length at least one.
      * @param bookCategories List of objects of type BookCategory with length at least one.
      * @return true if all parameters are valid, otherwise on the first invalid operator
      * prints error message and returns false.
      */
     private boolean isBookValid(String bookISBN, String bookTitle, String summary,
-                                List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories) {
+                                List<Author> authors, BookGenre bookGenre, List<BookTags> bookCategories) {
         if (IsISBNInvalid(bookISBN)) {
             System.out.println(("The provided ISBN was not valid. " +
                     "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'."));
@@ -225,7 +226,7 @@ public class BookController {
             return false;
         }
 
-        if (areGenresInvalid(bookGenres)) {
+        if (areGenresInvalid(bookGenre)) {
             System.out.println("The provided genre/s of the book are not valid. " +
                     "Please provide at least one valid book genre.");
             return false;
@@ -246,18 +247,18 @@ public class BookController {
      * @param bookCategories Should be list of objects of type BookCategory with length at least 1.
      * @return true if provided list exists and has at least one category in it, otherwise - false.
      */
-    private boolean areCategoriesInvalid(List<BookCategory> bookCategories) {
+    private boolean areCategoriesInvalid(List<BookTags> bookCategories) {
         return bookCategories == null || bookCategories.isEmpty();
     }
 
     /**
      * Validates the provided list of BookGenres.
      *
-     * @param bookGenres Should be A list with objects of type BookGenre.
+     * @param bookGenre Should be A list with objects of type BookGenre.
      * @return true if there is at least one genre in the list, otherwise - false.
      */
-    private boolean areGenresInvalid(List<BookGenre> bookGenres) {
-        return bookGenres == null || bookGenres.isEmpty();
+    private boolean areGenresInvalid(BookGenre bookGenre) {
+        return bookGenre == null;
     }
 
     /**

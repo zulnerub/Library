@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class BookRepository {
 
-    private final Map<String, Book> books = new HashMap<>();
+    private Map<String, Book> books = new HashMap<>();
     private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
     private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();
     private Map<Integer, UserRegistryForm> requestedBooks = new HashMap<>();
@@ -169,12 +169,39 @@ public class BookRepository {
      * @return The due date of the form or null if not found.
      */
     public LocalDate getDueDate(String username, String ISBN) {
-        UserRegistryForm userRegistryForm = borrowedBooks.get(username).stream()
+        UserRegistryForm userBorrowForm = borrowedBooks.get(username).stream()
                 .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
                 .findFirst()
                 .orElse(null);
 
-        return userRegistryForm != null ? userRegistryForm.getEndDate() : null;
+        return userBorrowForm != null ? userBorrowForm.getEndDate() : null;
+    }
+
+    /**
+     * Searches if the provided user has rented a book with the provided ISBN.
+     * If a form describing such action is found the book is
+     * then returned to the library and a proper message is returned.
+     * Else message for failure is returned.
+     *
+     * @param username Unique user identifier.
+     * @param ISBN     Unique book identifier.
+     * @return Message for the action taken. Book has been removed or not.
+     */
+    public String returnBookToLibrary(String username, String ISBN) {
+        UserRegistryForm userBorrowForm = borrowedBooks.get(username).stream()
+                .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
+                .findFirst()
+                .orElse(null);
+
+        if (userBorrowForm == null) {
+            return "The provided user doesn't exist or has not borrowed any book with that ISBN.";
+        }
+
+        ((PaperBook) books.get(userBorrowForm.getISBN())).addOneCopyToLibrary();
+
+        borrowedBooks.get(username).remove(userBorrowForm);
+
+        return "Book successfully returned to the library";
     }
 
     /**

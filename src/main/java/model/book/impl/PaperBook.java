@@ -1,6 +1,6 @@
 package model.book.impl;
 
-import enums.BookCategory;
+import enums.BookTags;
 import enums.BookGenre;
 import model.book.Book;
 import model.user.impl.Author;
@@ -18,10 +18,10 @@ public class PaperBook extends Book {
 
     public PaperBook(String ISBN, String title, String summary,
                      List<Author> authors,
-                     List<BookGenre> genres,
-                     List<BookCategory> categories,
+                     BookGenre genre,
+                     List<BookTags> categories,
                      int currentlyAvailable, int totalCopies) {
-        super(ISBN, title, summary, authors, genres, categories);
+        super(ISBN, title, summary, authors, genre, categories);
         this.currentlyAvailable = currentlyAvailable;
         this.totalCopies = totalCopies;
     }
@@ -43,7 +43,7 @@ public class PaperBook extends Book {
     /**
      * Makes one more copy available when a copy is returned by the user.
      */
-    public void addOneCopyFromLibrary() {
+    public void addOneCopyToLibrary() {
         currentlyAvailable += 1;
     }
 }
