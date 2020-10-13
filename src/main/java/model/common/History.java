@@ -12,9 +12,6 @@ import java.util.List;
 public class History {
     private List<Book> usedBooks = new ArrayList<>();
 
-    public History() {
-    }
-
     /**
      * Adds to history a book that the user has read, downloaded or borrowed.
      *

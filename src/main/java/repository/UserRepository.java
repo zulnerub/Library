@@ -14,9 +14,6 @@ import java.util.*;
 public class UserRepository {
     private final Map<String, User> users = new HashMap<>();
 
-    public UserRepository() {
-    }
-
     /**
      * Adds a User object to the collection of users.
      *

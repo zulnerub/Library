@@ -37,12 +37,16 @@ public class PaperBook extends Book {
         return isInStock;
     }
 
-    public int amountOfFreeCopies(){
+    public int freeCopies(){
         return currentlyAvailable;
     }
 
-    public void changeAmountOfFreeCopies(int amount){
-        currentlyAvailable += amount;
+    public void removeOneCopyFromLibrary(){
+        currentlyAvailable -= 1;
+    }
+
+    public void addOneCopyFromLibrary(){
+        currentlyAvailable += 1;
     }
 
     public Queue<String> getUsersInQueue(){

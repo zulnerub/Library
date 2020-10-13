@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 public class BookController {
     private final BookRepository bookRepository = new BookRepository();
 
-    public BookController() {
-    }
-
     /**
      * Searches for books where at least one of the authors has full name that contains the provided string.
      *

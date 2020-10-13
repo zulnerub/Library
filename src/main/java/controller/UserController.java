@@ -15,9 +15,6 @@ import java.util.regex.Pattern;
 public class UserController {
     private final UserRepository userrepository = new UserRepository();
 
-    public UserController() {
-    }
-
     /**
      * Provides a check if a user with that username is already registered and
      * if user exists validates the provided password.
