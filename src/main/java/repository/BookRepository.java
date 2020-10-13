@@ -2,12 +2,11 @@ package repository;
 
 import model.book.Book;
 import model.book.impl.PaperBook;
+import model.common.UserRegistryForm;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Has the role of containing all the books in the library and execute simple operations like:
@@ -17,121 +16,164 @@ import java.util.Map;
  */
 public class BookRepository {
     private final Map<String, Book> books = new HashMap<>();
-    private Map<String, Map<String, LocalDate[]>> usersWithBorrowedBooks = new HashMap<>();
-    private Map<String, List<String>> offeredBooks = new HashMap<>();
-
-    public BookRepository() {
-    }
+    private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
+    private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();
+    private Map<Integer, UserRegistryForm> requestedBooks = new HashMap<>();
+    private int requestIndex = 0;
 
     /**
-     * Provides checks for the validity of the claim - user has offered books, user has exact offered book,
-     * and returns the corresponding message.
+     * Checks if the user has offered books and if the provided book ISBN
+     * is offered to him. If  book ISBN is found the book is borrowed by the user and the
+     * corresponding message is returned.
      *
      * @param username Unique identifier of the user.
      * @param ISBN     Unique identifier of the book.
-     * @return Message explayning the actions taken/not taken.
+     * @return Message to indicate what was the executed action.
      */
     public String borrowBook(String username, String ISBN) {
-        if (offeredBooks.containsKey(username)) {
-            if (offeredBooks.get(username).contains(ISBN)) {
-                registerBorrowedBook(username, ISBN);
-                offeredBooks.get(username).remove(ISBN);
-                ((PaperBook)books.get(ISBN)).getUsersInQueue().remove(username);
-                return "User " + username + " have successfully borrowed book with ISBN number: " + ISBN;
-            }
+
+        if (!offeredBooks.containsKey(username)) {
+            return "User " + username + " has no offered books yet.";
+        }
+
+        UserRegistryForm offerForm = offeredBooks.get(username).stream()
+                .filter(form -> form.getISBN().equals(ISBN))
+                .findFirst()
+                .orElse(null);
+
+        if (offerForm == null) {
             return "There is no book with ISBN " + ISBN + " offered to user " + username + ".";
         }
-        return "User " + username + " has no offered books yet.";
+
+        UserRegistryForm borrowForm = new UserRegistryForm(username, ISBN, 14);
+
+        borrowedBooks.putIfAbsent(username, new ArrayList<>());
+        borrowedBooks.get(username).add(borrowForm);
+
+        offeredBooks.get(username).removeIf(offeredBook -> offeredBook.getISBN().equals(ISBN));
+
+        return "User " + username + " have successfully borrowed book with ISBN number: " + ISBN;
+
     }
 
     /**
-     * Searches if the book exists and if it is available and provides a corresponding message.
+     * Checks if the provided ISBN is assigned to a PaperBook
+     * and whether there are available copies of that book.
+     * If all are true a request for a book is created.
      *
      * @param username Unique identifier of the user.
      * @param ISBN     Unique identifier of the book.
-     * @return If found and available the book is saved
+     * @return Message corresponding to the applied action.
      */
     public String requestBook(String username, String ISBN) {
-        if (books.get(ISBN) instanceof PaperBook) {
-            int currentlyAvailableCopies = ((PaperBook) books.get(ISBN)).amountOfFreeCopies();
 
-            if (currentlyAvailableCopies > 0) {
-                ((PaperBook) books.get(ISBN)).changeAmountOfFreeCopies(-1);
-
-                offeredBooks.putIfAbsent(username, new ArrayList<>());
-                offeredBooks.get(username).add(ISBN);
-
-                return "You are first in line and there is available book in stock. " +
-                        "You have 3 days to borrow the book.";
-            } else {
-                ((PaperBook) books.get(ISBN)).getUsersInQueue().add(username);
-                return "You are " + (((PaperBook) books.get(ISBN)).getUsersInQueue().size() + 1)
-                        + " in line for that book.";
-            }
+        if (isNotPaperBook(ISBN)) {
+            return "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
         }
 
-        return "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
+        PaperBook currentBook = ((PaperBook) books.get(ISBN));
+
+        int availableCopies = currentBook.freeCopies();
+
+        if (availableCopies > 0) {
+            currentBook.removeOneCopyFromLibrary();
+
+            offeredBooks.putIfAbsent(username, new ArrayList<>());
+            offeredBooks.get(username).add(new UserRegistryForm(username, ISBN, 3));
+
+            return "You are first in line and there is available book in stock. " +
+                    "You have 3 days to borrow the book.";
+
+        }
+
+        requestedBooks.put(++requestIndex, new UserRegistryForm(username, ISBN));
+
+        return "You are " + getPlaceInQueue(username, ISBN)
+                + " in line for that book.";
+
     }
 
-
     /**
-     * Receives the username and the book he wants to postpone the return of.
-     * Based on the executed operation returns a message to inform of the applied action.
-     *
-     * @param username Unique identifier of the user.
-     * @param ISBN     Unique identifier of the book
-     * @return Message stating the action taken.
+     * @param ISBN Unique identifier of book.
+     * @return true if given book is not a PaperBook or
+     * false if is a PaperBook.
      */
-    public String postponeDueDate(String username, String ISBN) {
-        if (usersWithBorrowedBooks.containsKey(username)) {
-            if (usersWithBorrowedBooks.get(username).containsKey(ISBN)) {
-                LocalDate rentedOn = usersWithBorrowedBooks.get(username).get(ISBN)[0];
-                LocalDate dueDate = usersWithBorrowedBooks.get(username).get(ISBN)[1];
-
-                if (!dueDate.plusDays(1).isAfter(rentedOn.plusDays(28))) {
-                    usersWithBorrowedBooks.get(username).get(ISBN)[1] = dueDate.plusDays(1);
-                    return "Due date postponed to: " + dueDate.plusDays(1).toString();
-                }
-                return "You have already postponed your due date with 14 days. " +
-                        "The date will not be postponed.";
-            }
-
-            return "You have no book to return with ISBN " + ISBN;
-        }
-        return "User " + username + " has no borrowed books.";
+    private boolean isNotPaperBook(String ISBN) {
+        return !(books.get(ISBN) instanceof PaperBook);
     }
 
     /**
-     * Seeks the records of a user and if has any, Searches for the book with the provided isbn
-     * and if found gets the due date when the book has to be returned to the library.
-     *
-     * @param username Unique identifier for the user.
-     * @param ISBN     Unique identifier for the book.
-     * @return Due date for the searched book of the user or null if nothing is found.
-     */
-    public LocalDate dueDateForPaperBook(String username, String ISBN) {
-        if (usersWithBorrowedBooks.containsKey(username)) {
-            if (usersWithBorrowedBooks.get(username).containsKey(ISBN)) {
-                return usersWithBorrowedBooks.get(username).get(ISBN)[1];
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Registers the user if he has no borrowed books currently and registers on his account
-     * the borrowed book with records for the date of borrowing and due date for the return.
+     * Calculates the place of the user in the queue for given book.
      *
      * @param username Unique identifier of the user.
      * @param ISBN     Unique identifier of the book.
+     * @return Place in queue for the user - int.
      */
-    private void registerBorrowedBook(String username, String ISBN) {
-        usersWithBorrowedBooks.putIfAbsent(username, new HashMap<>());
-        usersWithBorrowedBooks.get(username)
-                .put(ISBN, new LocalDate[]{
-                        LocalDate.now(), LocalDate.now().plusDays(14)
-                });
+    public int getPlaceInQueue(String username, String ISBN) {
+        List<UserRegistryForm> list = requestedBooks.values().stream()
+                .filter(form -> form.getISBN().equals(ISBN))
+                .collect(Collectors.toList());
+
+        UserRegistryForm userRegistryForm = list.stream()
+                .filter(f -> f.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+
+        return list.indexOf(userRegistryForm);
+    }
+
+
+    /**
+     * Checks if the user has borrowed books and has borrowed given book
+     * with ISBN. Also checks if it is possible to extend the due date.
+     *
+     * @param username Unique identifier of the user.
+     * @param ISBN     Unique identifier of book.
+     * @return Message corresponding to the action taken or the result of the checks.
+     */
+    public String postponeDueDate(String username, String ISBN) {
+        if (!borrowedBooks.containsKey(username)) {
+            return "User " + username + " has no borrowed books.";
+        }
+
+        UserRegistryForm userRegistryForm = borrowedBooks.get(username).stream()
+                .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
+                .findFirst()
+                .orElse(null);
+
+        if (userRegistryForm == null) {
+            return "You have no book to return with ISBN " + ISBN;
+        }
+
+        LocalDate rentedOn = userRegistryForm.getStartDate();
+        LocalDate dueDate = userRegistryForm.getEndDate();
+
+        if (dueDate.plusDays(1).isAfter(rentedOn.plusDays(28))) {
+            return "You have already postponed your due date with 14 days. " +
+                    "The date will not be postponed.";
+        }
+
+        userRegistryForm.extendDueDate(1);
+
+        return "Due date postponed to: " + userRegistryForm.getEndDate().toString();
+
+    }
+
+    /**
+     * Finds a borrow form by given username and ISBN and
+     * if found gets the due date.
+     *
+     * @param username Unique user identifier.
+     * @param ISBN     Unique book identifier.
+     * @return The due date of the form or null if not found.
+     */
+    public LocalDate getDueDate(String username, String ISBN) {
+        UserRegistryForm userRegistryForm = borrowedBooks.get(username).stream()
+                .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
+                .findFirst()
+                .orElse(null);
+
+        return userRegistryForm != null ? userRegistryForm.getEndDate() : null;
     }
 
     /**
