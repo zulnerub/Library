@@ -1,30 +1,73 @@
 import controller.BookController;
 import controller.UserController;
+import enums.BookGenre;
+import enums.BookTags;
 import enums.Gender;
 import exception.CustomException;
 import model.common.Address;
+import model.user.impl.Author;
 import model.user.impl.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Main class of the application where the starting and initialization of the application occurs.
  */
 public class Application {
     private static final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    private static final UserController userController = new UserController();
+    private static final BookController bookController = new BookController();
     private static User loggedUser;
+    private static boolean isUserLogged = false;
 
     public static void main(String[] args) {
 
-        UserController userController = new UserController();
-        BookController bookController = new BookController();
+        init();
 
-        boolean isUserLogged = false;
+        //loginUser();
 
+        System.out.println(bookController.searchBookByAuthorsFirstName("George"));
+        System.out.println(bookController.searchBookByAuthorsLastName("Rolling"));
+        bookController.searchBookByAuthorsFullName("George Martin")
+                .forEach(b -> System.out.println(
+                        b.getISBN() + " "
+                                + b.getTitle() + " "
+                                + b.getGenre().name() + " "
+                               // + b.getAuthors().forEach(a -> System.out.println(a.getFirstName() + " " + a.getLastName())) + " "
+                                //+ b.getBookTags().forEach(System.out::println)
+                ));
+
+    }
+
+    private static void init(){
+        LocalDate ld = LocalDate.of(1965, 1, 1);
+        LocalDate sLd = LocalDate.of(1972,3,22);
+        Author georgeMartin = new Author("George", "Martin", ld, null);
+        Author joanRolling = new Author("Joan", "Rolling", sLd, null);
+
+        System.out.println(bookController.addPaperBook("1234-5", "Game of thrones",
+                "Very interesting book about internal and  external royal family affairs.",
+                Collections.singletonList(georgeMartin),
+                BookGenre.FANTASY, Arrays.asList(BookTags.STORY, BookTags.HOBBY), 5));
+
+        System.out.println(bookController.addEBook("1234-6", "Harry Potter",
+                "A book about magic and magitians",
+                Collections.singletonList(joanRolling),
+                BookGenre.FANTASY, Arrays.asList(BookTags.STORY, BookTags.CHILDREN), "http://harrypotter.online.read.com"));
+
+        System.out.println(bookController.addDownloadableEBook("1234-7", "The day the earth stood still",
+                "A book about aliens and post apocaliptic world scenarious.",
+                Collections.singletonList(joanRolling),
+                BookGenre.SCI_FI, Collections.singletonList(BookTags.LEARNING), "http://earthstood.online.read.com",
+                "http://stillearth.online.download.com"));
+    }
+
+    private static void loginUser() {
         while (!isUserLogged) {
             System.out.println("Please enter username: ");
             String username = getUserInput();
@@ -46,25 +89,22 @@ public class Application {
                     String wantsToRegister = bufferedReader.readLine();
 
                     if (wantsToRegister.equalsIgnoreCase("yes")) {
-                        registerUserInput(userController);
+                        registerUserInput();
                     }
                 } catch (IOException exception) {
                     throw new CustomException("No input found.");
                 }
             }
         }
-
-
     }
 
     /**
      * Gathers input from the user when prompted to register a new user.
      * Sends the input to be validate and to register a user if the input is valid.
      *
-     * @param userController The controller responsible for the user registration and authentication in the system.
      * @throws IOException BufferedReader can throw exception if there are problems with the input.
      */
-    private static void registerUserInput(UserController userController) throws IOException {
+    private static void registerUserInput() throws IOException {
         System.out.println("Do you consent to the GDPR agreement:   yes/no");
         String userInputGDPR = bufferedReader.readLine();
 

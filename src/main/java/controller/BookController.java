@@ -10,7 +10,6 @@ import model.user.impl.Author;
 import repository.BookRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -300,7 +299,7 @@ public class BookController {
     private boolean IsISBNInvalid(String bookISBN) {
         boolean result = true;
 
-        if (isStringValid(bookISBN) && Pattern.matches("^([0-9]){4}-(1)", bookISBN.trim())) {
+        if (isStringValid(bookISBN) && Pattern.matches("^([0-9]){4}-[0-9]", bookISBN.trim())) {
             result = bookRepository
                     .getAllBooksInLibrary()
                     .stream()

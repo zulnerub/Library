@@ -68,9 +68,7 @@ public class UserController {
             User user = new User(firstName, lastName, address,
                     gender, username, password, email, GDPR, age);
 
-            userRepository.addUser(user);
-
-            return "User " + username + " registered Successfully.";
+            return  userRepository.addUser(user);
         }
 
         return "User not created.";
@@ -184,7 +182,7 @@ public class UserController {
      * @return true if parameter is valid or false if not valid.
      */
     private boolean isNameInvalid(String name) {
-        return !isStringInputValid(name) || name.trim().length() <= 1 || name.trim().length() > 20;
+        return isStringInputValid(name) || name.trim().length() <= 1 || name.trim().length() > 20;
     }
 
     /**
@@ -205,7 +203,7 @@ public class UserController {
      * @return true if parameter is valid or false if not valid.
      */
     private boolean isPasswordInvalid(String password) {
-        return !isStringInputValid(password) || password.length() <= 4;
+        return isStringInputValid(password) || password.length() <= 4;
     }
 
     /**
@@ -217,7 +215,7 @@ public class UserController {
      * or false if any of the above are not met.
      */
     private boolean isUsernameInvalid(String username) {
-        return !isStringInputValid(username) || username.length() < 2 && userAlreadyExists(username);
+        return isStringInputValid(username) || username.length() < 2 && userAlreadyExists(username);
     }
 
     /**
@@ -235,7 +233,7 @@ public class UserController {
      * @return true if the provided string matches the expected checks otherwise - false.
      */
     private boolean isStringInputValid(String stringInput) {
-        return stringInput != null && !stringInput.isBlank();
+        return stringInput == null || stringInput.isBlank();
     }
 
     /**

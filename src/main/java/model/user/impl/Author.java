@@ -3,7 +3,6 @@ package model.user.impl;
 import model.user.Person;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Creates an object Author to complement the {@Book} objects.
