@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Contains common methods for all three classes.
  */
 public abstract class Book {
+
     private String ISBN;
     private String title;
     private String summary;

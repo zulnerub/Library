@@ -4,6 +4,7 @@ package enums;
  * Enumeration with parameter simpleName to represent the Categories of a book.
  */
 public enum BookCategory {
+
     CHILDREN("children"),
     STORY("story"),
     LEARNING("learning"),

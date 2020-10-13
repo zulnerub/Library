@@ -9,7 +9,6 @@ import model.book.impl.PaperBook;
 import model.user.impl.Author;
 import repository.BookRepository;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
  * Operates on the book repository.
  */
 public class BookController {
+
     private final BookRepository bookRepository = new BookRepository();
 
     /**
@@ -164,9 +164,9 @@ public class BookController {
     public String addPaperBook(String bookISBN, String bookTitle, String summary,
                                List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories,
                                int totalCopies) {
-        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && isTotalCopiesValid(totalCopies)) {
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories) && areCopiesAtLeastOne(totalCopies)) {
             PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenres, bookCategories,
-                    totalCopies, totalCopies, true, new ArrayDeque<>());
+                    totalCopies, totalCopies);
 
             bookRepository.addBookToLibrary(newPaperBook);
 
@@ -182,7 +182,7 @@ public class BookController {
      * @param totalCopies Represents the initial copies of the book when added to the library. Must be greater than one.
      * @return true if input's value is greater than zero, otherwise - false.
      */
-    private boolean isTotalCopiesValid(int totalCopies) {
+    private boolean areCopiesAtLeastOne(int totalCopies) {
         return totalCopies > 0;
     }
 
@@ -201,37 +201,37 @@ public class BookController {
      */
     private boolean isBookValid(String bookISBN, String bookTitle, String summary,
                                 List<Author> authors, List<BookGenre> bookGenres, List<BookCategory> bookCategories) {
-        if (!isISBNValid(bookISBN)) {
+        if (IsISBNInvalid(bookISBN)) {
             System.out.println(("The provided ISBN was not valid. " +
                     "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'."));
             return false;
         }
 
-        if (!isTitleValid(bookTitle)) {
+        if (isTitleInvalid(bookTitle)) {
             System.out.println("The provided book title is not valid. " +
                     "The title should be at least 3 symbols long.");
             return false;
         }
 
-        if (!isSummaryValid(summary)) {
+        if (isSummaryInvalid(summary)) {
             System.out.println("The provided summary is not valid. " +
                     "The summary must be at least 50 symbols in length.");
             return false;
         }
 
-        if (!areAuthorsValid(authors)) {
+        if (areAuthorsInvalid(authors)) {
             System.out.println("The provided author/authors is/are not valid. " +
                     "Please provide at least one, valid author to add a book to the library.");
             return false;
         }
 
-        if (!areBookGenresValid(bookGenres)) {
+        if (areGenresInvalid(bookGenres)) {
             System.out.println("The provided genre/s of the book are not valid. " +
                     "Please provide at least one valid book genre.");
             return false;
         }
 
-        if (!areBookCategoriesValid(bookCategories)) {
+        if (areCategoriesInvalid(bookCategories)) {
             System.out.println("The provided book category/ies are not valid. " +
                     "Please provide at least one valid category to add a book to the library.");
             return false;
@@ -246,8 +246,8 @@ public class BookController {
      * @param bookCategories Should be list of objects of type BookCategory with length at least 1.
      * @return true if provided list exists and has at least one category in it, otherwise - false.
      */
-    private boolean areBookCategoriesValid(List<BookCategory> bookCategories) {
-        return bookCategories != null && !bookCategories.isEmpty();
+    private boolean areCategoriesInvalid(List<BookCategory> bookCategories) {
+        return bookCategories == null || bookCategories.isEmpty();
     }
 
     /**
@@ -256,8 +256,8 @@ public class BookController {
      * @param bookGenres Should be A list with objects of type BookGenre.
      * @return true if there is at least one genre in the list, otherwise - false.
      */
-    private boolean areBookGenresValid(List<BookGenre> bookGenres) {
-        return bookGenres != null && !bookGenres.isEmpty();
+    private boolean areGenresInvalid(List<BookGenre> bookGenres) {
+        return bookGenres == null || bookGenres.isEmpty();
     }
 
     /**
@@ -266,8 +266,8 @@ public class BookController {
      * @param authors List of objects of type Author with length at least 1.
      * @return true if list is not null and not empty, otherwise - false.
      */
-    private boolean areAuthorsValid(List<Author> authors) {
-        return authors != null && !authors.isEmpty();
+    private boolean areAuthorsInvalid(List<Author> authors) {
+        return authors == null || authors.isEmpty();
     }
 
     /**
@@ -276,8 +276,8 @@ public class BookController {
      * @param summary Should be a string longer than 50 symbols.
      * @return true if the provided string is valid or false if not.
      */
-    private boolean isSummaryValid(String summary) {
-        return isStringValid(summary) && summary.length() > 50;
+    private boolean isSummaryInvalid(String summary) {
+        return !isStringValid(summary) || summary.length() <= 50;
     }
 
     /**
@@ -286,8 +286,8 @@ public class BookController {
      * @param bookTittle Should be a string longer than 3 symbols.
      * @return true if valid, otherwise - false
      */
-    private boolean isTitleValid(String bookTittle) {
-        return isStringValid(bookTittle) && bookTittle.length() > 3;
+    private boolean isTitleInvalid(String bookTittle) {
+        return !isStringValid(bookTittle) || bookTittle.length() <= 3;
     }
 
     /**
@@ -296,29 +296,14 @@ public class BookController {
      * @param bookISBN String representation of the ISBN - should be in format "####-#".
      * @return true if input is valid otherwise -false.
      */
-    private boolean isISBNValid(String bookISBN) {
-        boolean result = false;
+    private boolean IsISBNInvalid(String bookISBN) {
+        boolean result = true;
 
-        if (isStringValid(bookISBN) && bookISBN.trim().length() == 6
-                && bookISBN.trim().charAt(4) == '-') {
-            result = true;
-
-            for (int i = 0; i < 6; i++) {
-                if (i != 4) {
-                    if (!Character.isDigit(bookISBN.trim().charAt(i))) {
-                        result = false;
-                    }
-                }
-            }
-        }
-
-        boolean ISBNAlreadyExists = bookRepository
-                .getAllBooksInLibrary()
-                .stream()
-                .anyMatch(book -> book.getISBN().equals(bookISBN.trim()));
-
-        if (ISBNAlreadyExists) {
-            result = false;
+        if (isStringValid(bookISBN) && Pattern.matches("^([0-9]){4}-(1)", bookISBN.trim())) {
+            result = bookRepository
+                    .getAllBooksInLibrary()
+                    .stream()
+                    .anyMatch(book -> book.getISBN().equals(bookISBN.trim()));
         }
 
         return result;

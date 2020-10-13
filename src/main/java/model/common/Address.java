@@ -4,6 +4,7 @@ package model.common;
  * This is an object containing parameters of a real address - street, city, country.
  */
 public class Address {
+
     private String country;
     private String city;
     private String street;

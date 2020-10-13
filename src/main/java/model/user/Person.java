@@ -5,6 +5,7 @@ package model.user;
  * Contains common methods.
  */
 public abstract class Person {
+
     private String firstName;
     private String lastName;
 

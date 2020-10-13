@@ -10,6 +10,7 @@ import java.util.List;
  * to deletion of the account.
  */
 public class History {
+
     private List<Book> usedBooks = new ArrayList<>();
 
     /**

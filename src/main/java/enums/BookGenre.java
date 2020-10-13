@@ -4,6 +4,7 @@ package enums;
  * Enumeration with a parameter simpleName to represent the Genres of a book.
  */
 public enum BookGenre {
+
     DRAMA("drama"),
     HORROR("horror"),
     SCI_FI("sci_fi"),

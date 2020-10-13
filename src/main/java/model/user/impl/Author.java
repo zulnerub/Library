@@ -10,6 +10,7 @@ import java.util.Date;
  * Stores Dates of birth and death as well as common fields and methods from Person
  */
 public class Author extends Person {
+
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
 

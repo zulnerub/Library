@@ -12,6 +12,7 @@ import java.util.List;
  * Object that represents an online book with possibility to be read online.
  */
 public class EBook extends Book implements Electronic {
+
     private String onlineLink;
 
     public EBook(String ISBN, String title, String summary,

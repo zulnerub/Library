@@ -13,6 +13,7 @@ import java.util.List;
  * Object that represents an online book with possibility to be read and downloaded.
  */
 public class DownloadableEBook extends Book implements Electronic, Downloadable {
+
     private String onlineLink;
     private String downloadLink;
 

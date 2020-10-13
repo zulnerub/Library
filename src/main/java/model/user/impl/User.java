@@ -10,6 +10,7 @@ import model.user.Person;
  * Also stores the users credentials for authentication and history.
  */
 public class User extends Person {
+
     private Address location;
     private Gender gender;
     private History history = new History();

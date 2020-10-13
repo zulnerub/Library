@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
  * Operates on the user repository.
  */
 public class UserController {
+
     private final UserRepository userRepository = new UserRepository();
 
     /**
@@ -63,7 +64,7 @@ public class UserController {
     public String registerUser(String username, String password, boolean GDPR,
                                String firstName, String lastName,
                                int age, Address address, Gender gender, String email) {
-        if (!GDPR) {
+        if (isNotGDPRCompliant(GDPR)) {
             return "Please consent to the GDPR agreement.";
         }
 
@@ -101,6 +102,14 @@ public class UserController {
         userRepository.addUser(user);
 
         return "User " + username + " registered Successfully.";
+    }
+
+    /**
+     * @param gdpr Indicates whether the user consents to the GDPR agreement or not.
+     * @return true if user complies or false if not.
+     */
+    private boolean isNotGDPRCompliant(boolean gdpr) {
+        return gdpr;
     }
 
     /**
@@ -177,6 +186,10 @@ public class UserController {
         return !isStringInputValid(username) || username.length() <= 7 && userAlreadyExists(username);
     }
 
+    /**
+     * @param username Unique user identifier.
+     * @return true if the username already exists or false if it is available.
+     */
     private boolean userAlreadyExists(String username) {
         return getUser(username) != null;
     }

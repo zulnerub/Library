@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  * - etc.
  */
 public class BookRepository {
+
     private final Map<String, Book> books = new HashMap<>();
     private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
     private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();

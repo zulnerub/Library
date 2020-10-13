@@ -12,6 +12,7 @@ import java.util.*;
  * - etc.
  */
 public class UserRepository {
+
     private final Map<String, User> users = new HashMap<>();
 
     /**
