@@ -64,44 +64,78 @@ public class UserController {
     public String registerUser(String username, String password, boolean GDPR,
                                String firstName, String lastName,
                                int age, Address address, Gender gender, String email) {
-        if (isNotGDPRCompliant(GDPR)) {
-            return "Please consent to the GDPR agreement.";
+        if (validateUserData(username, password, GDPR, firstName, lastName, age, address, gender, email)) {
+            User user = new User(firstName, lastName, address,
+                    gender, username, password, email, GDPR, age);
+
+            userRepository.addUser(user);
+
+            return "User " + username + " registered Successfully.";
         }
 
-        if (isUserInvalid(username)) {
-            return "Username is not valid. Username must be at least 8 symbols long.";
+        return "User not created.";
+    }
+
+    /**
+     * Validates each parameter separately and prints error message if not valid.
+     *
+     * @param username  Unique user identifier.
+     * @param password  String representing the user password.
+     * @param gdpr      Indicates whether the user complies with the GDPR agreement or not.
+     * @param firstName String representation of the first name of the user.
+     * @param lastName  String representation of the second name of the user.
+     * @param age       int - age of the user.
+     * @param address   Location with country, city and street stored in it.
+     * @param gender    Can be either 'm' or 'f'. Enum
+     * @param email     String representing the user's email.
+     * @return true if all passed parameters are valid or false if any one of them is not valid.
+     */
+    private boolean validateUserData(String username, String password,
+                                     boolean gdpr, String firstName, String lastName,
+                                     int age, Address address, Gender gender, String email) {
+        boolean result = true;
+
+        if (isNotGDPRCompliant(gdpr)) {
+            System.out.println("Please consent to the GDPR agreement.");
+            result = false;
+        }
+
+        if (isUsernameInvalid(username)) {
+            System.out.println("Username is not valid. Username must be at least 8 symbols long.");
+            result = false;
         }
 
         if (isPasswordInvalid(password)) {
-            return "Password is not invalid. Password must be at least 5 symbols long";
+            System.out.println("Password is not invalid. Password must be at least 5 symbols long");
+            result = false;
         }
 
         if (isNameInvalid(firstName) || !isNameInvalid(lastName)) {
-            return "The specified first and last name must be long at least 8 symbols each.";
+            System.out.println("The specified first and last name must be long at least 8 symbols each.");
+            result = false;
         }
 
         if (isAgeInvalid(age)) {
-            return "Specified age must be between 6 and 125 - excluded.";
+            System.out.println("Specified age must be between 6 and 125 - excluded.");
+            result = false;
         }
 
         if (isGenreInvalid(gender)) {
-            return "The provided options for gender are: 'm' or 'f'.";
+            System.out.println("The provided options for gender are: 'm' or 'f'.");
+            result = false;
         }
 
         if (isAddressInvalid(address)) {
-            return "Please provide a valid address. Fields must be non empty.";
+            System.out.println("Please provide a valid address. Fields must be non empty.");
+            result = false;
         }
 
         if (isEmailInvalid(email)) {
-            return "Please provide a valid email.";
+            System.out.println("Please provide a valid email.");
+            result = false;
         }
 
-        User user = new User(firstName, lastName, address,
-                gender, username, password, email, GDPR, age);
-
-        userRepository.addUser(user);
-
-        return "User " + username + " registered Successfully.";
+        return result;
     }
 
     /**
@@ -182,7 +216,7 @@ public class UserController {
      * @return true if there is no user with that name, and the string is valid and over 7 symbols long.
      * or false if any of the above are not met.
      */
-    private boolean isUserInvalid(String username) {
+    private boolean isUsernameInvalid(String username) {
         return !isStringInputValid(username) || username.length() <= 7 && userAlreadyExists(username);
     }
 
