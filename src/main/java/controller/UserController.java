@@ -15,7 +15,11 @@ import java.util.regex.Pattern;
  */
 public class UserController {
 
-    private final UserRepository userRepository = new UserRepository();
+    private final UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     /**
      * Provides a check if a user with that username is already registered and

@@ -7,6 +7,7 @@ import exception.CustomException;
 import model.common.Address;
 import model.user.impl.Author;
 import model.user.impl.User;
+import repository.UserRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,9 +20,10 @@ import java.util.Collections;
  * Main class of the application where the starting and initialization of the application occurs.
  */
 public class Application {
+    private static final UserRepository userRepository = new UserRepository();
     private static final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-    private static final UserController userController = new UserController();
-    private static final BookController bookController = new BookController(userController.getUserRepository());
+    private static final UserController userController = new UserController(userRepository);
+    private static final BookController bookController = new BookController(userRepository);
     private static LocalDate currentDate = LocalDate.now();
     private static User loggedUser;
     private static boolean isUserLogged = false;
@@ -62,7 +64,7 @@ public class Application {
                 BookGenre.FANTASY, Arrays.asList(BookTags.STORY, BookTags.CHILDREN), "http://harrypotter.online.read.com"));
 
         System.out.println(bookController.addDownloadableEBook("1234-7", "The day the earth stood still",
-                "A book about aliens and post apocaliptic world scenarious.",
+                "A book about aliens and post apocalyptic world scenarios.",
                 Collections.singletonList(joanRolling),
                 BookGenre.SCI_FI, Collections.singletonList(BookTags.LEARNING), "http://earthstood.online.read.com",
                 "http://stillearth.online.download.com"));
