@@ -20,7 +20,7 @@ public class BookRepository {
     public static final int DAYS_TO_BORROW_BOOK = 3;
     public static final int AVERAGE_DAYS_BOOK_IS_RENTED_PER_USER = 21;
     private final UserRepository users;
-    private Map<String, Book> books = new HashMap<>();
+    private Map<String, Book> books = new LinkedHashMap<>();
     private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
     private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();
     private Map<Integer, UserRegistryForm> requestedBooks = new LinkedHashMap<>();

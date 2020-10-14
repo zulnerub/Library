@@ -51,7 +51,7 @@ public abstract class Book {
      */
     public List<String> getBookTags() {
         return tags.stream()
-                .map(BookTags::getSimpleName)
+                .map(BookTags::name)
                 .collect(Collectors.toList());
     }
 

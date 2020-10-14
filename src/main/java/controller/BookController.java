@@ -379,11 +379,4 @@ public class BookController {
     private boolean isStringValid(String strToValidate) {
         return strToValidate != null && !strToValidate.isBlank();
     }
-
-    /**
-     * @return Reference to the book repository.
-     */
-    public BookRepository getBookRepository() {
-        return bookRepository;
-    }
 }
