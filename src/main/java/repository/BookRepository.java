@@ -23,7 +23,7 @@ public class BookRepository {
     private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
     private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();
     private Map<Integer, UserRegistryForm> requestedBooks = new LinkedHashMap<>();
-    private Set<String> bannedUsers = new HashSet<>();
+    private List<UserRegistryForm> bannedUsers = new ArrayList<>();
     private LocalDate currentDate = LocalDate.now();
     private int requestIndex = 0;
 
@@ -38,7 +38,10 @@ public class BookRepository {
      */
     public String borrowBook(String username, String ISBN) {
 
-        if (bannedUsers.contains(username)) {
+        if (bannedUsers.stream()
+                .map(UserRegistryForm::getUsername)
+                .collect(Collectors.toList())
+                .contains(username)) {
             return "User " + username + " is banned form the library for delayed books!";
         }
 
@@ -168,6 +171,12 @@ public class BookRepository {
 
         borrowedBooks.get(username).remove(userBorrowForm);
 
+        bannedUsers.removeIf(userBanForm ->
+                (
+                        userBanForm.getUsername().equalsIgnoreCase(username)
+                                && userBanForm.getISBN().equals(ISBN)
+                ));
+
         return "Book successfully returned to the library";
     }
 
@@ -252,13 +261,18 @@ public class BookRepository {
         syncRequestedBooks();
     }
 
+    /**
+     * Iterates through all borrowed books and if any is found with due date
+     * before the current date the user that has borrowed it goes in the libraries banned list
+     * and will be prevented from borrowing a book until he/she returns it.
+     */
     private void syncBorrowedBooks() {
 
         borrowedBooks.forEach((username, borrowedForms) -> borrowedForms.forEach(form -> {
 
-            if (form.getEndDate().isAfter(currentDate)) {
+            if (form.getEndDate().isBefore(currentDate)) {
 
-                bannedUsers.add(username);
+                bannedUsers.add(new UserRegistryForm(username, form.getISBN()));
             }
         }));
     }
