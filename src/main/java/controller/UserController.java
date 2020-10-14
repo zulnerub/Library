@@ -7,6 +7,7 @@ import repository.UserRepository;
 
 import java.util.regex.Pattern;
 
+
 /**
  * Creates connection between the user and the user repository.
  * Provides authentication and validation of the user.
@@ -68,7 +69,7 @@ public class UserController {
             User user = new User(firstName, lastName, address,
                     gender, username, password, email, GDPR, age);
 
-            return  userRepository.addUser(user);
+            return userRepository.addUser(user);
         }
 
         return "User not created.";
@@ -248,5 +249,13 @@ public class UserController {
                 .filter(user -> user.getUsername().equals(username))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * @return Gets the user repository.
+     * Unfortunately i need this in the book repository and i have not found any other way so far to pass the reference. :[
+     */
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 }

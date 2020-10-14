@@ -8,12 +8,14 @@ import model.book.impl.EBook;
 import model.book.impl.PaperBook;
 import model.user.impl.Author;
 import repository.BookRepository;
+import repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 
 /**
  * Creates connection between the user and the book repository.
@@ -22,7 +24,12 @@ import java.util.stream.Collectors;
  */
 public class BookController {
 
-    private final BookRepository bookRepository = new BookRepository();
+    private final BookRepository bookRepository;
+
+    public BookController(UserRepository userRepository) {
+        bookRepository = new BookRepository(userRepository);
+    }
+
 
     /**
      * Iterates through all of the books in the library
@@ -285,7 +292,7 @@ public class BookController {
             return false;
         }
 
-        if (areCategoriesInvalid(bookCategories)) {
+        if (areBookTagsInvalid(bookCategories)) {
             System.out.println("The provided book category/ies are not valid. " +
                     "Please provide at least one valid category to add a book to the library.");
             return false;
@@ -297,11 +304,11 @@ public class BookController {
     /**
      * Validates the provided categories for the book to be added.
      *
-     * @param bookCategories Should be list of objects of type BookCategory with length at least 1.
+     * @param bookTags Should be list of objects of type BookCategory with length at least 1.
      * @return true if provided list exists and has at least one category in it, otherwise - false.
      */
-    private boolean areCategoriesInvalid(List<BookTags> bookCategories) {
-        return bookCategories == null || bookCategories.isEmpty();
+    private boolean areBookTagsInvalid(List<BookTags> bookTags) {
+        return bookTags == null || bookTags.isEmpty();
     }
 
     /**
@@ -371,5 +378,12 @@ public class BookController {
      */
     private boolean isStringValid(String strToValidate) {
         return strToValidate != null && !strToValidate.isBlank();
+    }
+
+    /**
+     * @return Reference to the book repository.
+     */
+    public BookRepository getBookRepository() {
+        return bookRepository;
     }
 }

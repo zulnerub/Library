@@ -21,7 +21,7 @@ import java.util.Collections;
 public class Application {
     private static final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
     private static final UserController userController = new UserController();
-    private static final BookController bookController = new BookController();
+    private static final BookController bookController = new BookController(userController.getUserRepository());
     private static LocalDate currentDate = LocalDate.now();
     private static User loggedUser;
     private static boolean isUserLogged = false;
@@ -31,7 +31,7 @@ public class Application {
         init();
 
         //loginUser();
-
+/*
         System.out.println(bookController.searchBookByAuthorsFirstName("George"));
         System.out.println(bookController.searchBookByAuthorsLastName("Rolling"));
         bookController.searchBookByAuthorsFullName("George Martin")
@@ -42,7 +42,7 @@ public class Application {
                                // + b.getAuthors().forEach(a -> System.out.println(a.getFirstName() + " " + a.getLastName())) + " "
                                 //+ b.getBookTags().forEach(System.out::println)
                 ));
-
+*/
     }
 
     private static void init(){

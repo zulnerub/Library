@@ -19,6 +19,7 @@ public class BookRepository {
     public static final int INITIAL_BORROW_TIME = 14;
     public static final int DAYS_TO_BORROW_BOOK = 3;
     public static final int AVERAGE_DAYS_BOOK_IS_RENTED_PER_USER = 21;
+    private final UserRepository users;
     private Map<String, Book> books = new HashMap<>();
     private Map<String, List<UserRegistryForm>> borrowedBooks = new HashMap<>();
     private Map<String, List<UserRegistryForm>> offeredBooks = new HashMap<>();
@@ -26,6 +27,10 @@ public class BookRepository {
     private List<UserRegistryForm> bannedUsers = new ArrayList<>();
     private LocalDate currentDate = LocalDate.now();
     private int requestIndex = 0;
+
+    public BookRepository(UserRepository userRepository) {
+        users = userRepository;
+    }
 
     /**
      * Checks if the user has offered books and if the provided book ISBN
@@ -63,7 +68,7 @@ public class BookRepository {
         borrowedBooks.putIfAbsent(username, new ArrayList<>());
         borrowedBooks.get(username).add(borrowForm);
 
-        offeredBooks.get(username).removeIf(offeredBook -> offeredBook.getISBN().equals(ISBN));
+        addBookToUserHistory(username, ISBN);
 
         return "User " + username + " have successfully borrowed book with ISBN number: " + ISBN;
 
@@ -177,6 +182,8 @@ public class BookRepository {
                                 && userBanForm.getISBN().equals(ISBN)
                 ));
 
+        removeBanForThisPenalty(username, ISBN);
+
         return "Book successfully returned to the library";
     }
 
@@ -218,15 +225,6 @@ public class BookRepository {
     }
 
     /**
-     * @param ISBN Unique identifier of book.
-     * @return true if given book is not a PaperBook or
-     * false if is a PaperBook.
-     */
-    private boolean isNotPaperBook(String ISBN) {
-        return !(books.get(ISBN) instanceof PaperBook);
-    }
-
-    /**
      * Receive an object of type Book and add it to the library
      * if the object is not null.
      *
@@ -243,6 +241,43 @@ public class BookRepository {
      */
     public List<Book> getAllBooksInLibrary() {
         return new ArrayList<>(books.values());
+    }
+
+    /**
+     * @return the current amount of available copies of the book.
+     */
+    public int freeCopies(PaperBook paperBook) {
+        return paperBook.getCurrentlyAvailable();
+    }
+
+    /**
+     * Checks if the book returned has been overdue and the user has a penalty for that.
+     * If the book was overdue than remove the penalty for that book only.
+     *
+     * @param username Unique user identifier.
+     * @param ISBN     Unique book identifier.
+     */
+    private void removeBanForThisPenalty(String username, String ISBN) {
+        offeredBooks.get(username).removeIf(offeredBook -> offeredBook.getISBN().equals(ISBN));
+    }
+
+    /**
+     * Adds reference to the borrowed book to the users history.
+     *
+     * @param username Unique user identifier.
+     * @param ISBN     Unique book identifier.
+     */
+    private void addBookToUserHistory(String username, String ISBN) {
+        users.getUser(username).getHistory().addUsedBook(books.get(ISBN));
+    }
+
+    /**
+     * @param ISBN Unique identifier of book.
+     * @return true if given book is not a PaperBook or
+     * false if is a PaperBook.
+     */
+    private boolean isNotPaperBook(String ISBN) {
+        return !(books.get(ISBN) instanceof PaperBook);
     }
 
     /**
@@ -320,10 +355,12 @@ public class BookRepository {
     }
 
     /**
-     * @return the current amount of available copies of the book.
+     * Makes one more copy available when a copy is returned by the user.
      */
-    public int freeCopies(PaperBook paperBook) {
-        return paperBook.getCurrentlyAvailable();
+    private void addOneCopyToLibrary(PaperBook paperBook) {
+        paperBook.setCurrentlyAvailable(
+                paperBook.getCurrentlyAvailable() + 1
+        );
     }
 
     /**
@@ -332,15 +369,6 @@ public class BookRepository {
     private void removeOneCopyFromLibrary(PaperBook paperBook) {
         paperBook.setCurrentlyAvailable(
                 paperBook.getCurrentlyAvailable() - 1
-        );
-    }
-
-    /**
-     * Makes one more copy available when a copy is returned by the user.
-     */
-    public void addOneCopyToLibrary(PaperBook paperBook) {
-        paperBook.setCurrentlyAvailable(
-                paperBook.getCurrentlyAvailable() + 1
         );
     }
 }

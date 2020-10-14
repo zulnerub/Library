@@ -50,4 +50,11 @@ public class User extends Person {
     public String getPassword() {
         return password;
     }
+
+    /**
+     * @return Get the user's history.
+     */
+    public History getHistory() {
+        return history;
+    }
 }
