@@ -16,8 +16,8 @@ public abstract class Book {
     private String ISBN;
     private String title;
     private String summary;
-    private List<Author> authors;
     private BookGenre genre;
+    private List<Author> authors;
     private List<BookTags> tags;
 
     public Book(String ISBN, String title, String summary,

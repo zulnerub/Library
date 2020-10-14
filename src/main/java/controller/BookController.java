@@ -10,6 +10,7 @@ import model.user.impl.Author;
 import repository.BookRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,6 +23,59 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookRepository bookRepository = new BookRepository();
+
+    /**
+     * Iterates through all of the books in the library
+     * and gets all which titles contain the given string.
+     *
+     * @param title A string that is expected to be contained in the title of some books.
+     * @return List of books matching the criteria or empty list.
+     */
+    public List<Book> searchByBookTitle(String title) {
+
+        return bookRepository.getAllBooksInLibrary()
+                .stream()
+                .filter(book -> book.getTitle().contains(title))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Gets the books that are in the specified genre.
+     *
+     * @param genreName String representation of the name of the genre.
+     * @return List of books matching the criteria or empty list.
+     */
+    public List<Book> searchByBookGenre(String genreName) {
+
+        List<String> allGenreNames = Arrays.stream(BookGenre.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
+        if (allGenreNames.contains(genreName)) {
+            return bookRepository.getAllBooksInLibrary().stream()
+                    .filter(book -> book.getGenre().name().equalsIgnoreCase(genreName))
+                    .collect(Collectors.toUnmodifiableList());
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * Searches for books that contain all the provided tags in its list of tags.
+     *
+     * @param searchTags Collection of tags - strings - provided by the user.
+     * @return List of books matching the criteria or empty list.
+     */
+    public List<Book> searchByBookTags(String... searchTags) {
+
+        if (searchTags.length < 1) {
+            return new ArrayList<>();
+        }
+
+        return bookRepository.getAllBooksInLibrary().stream()
+                .filter(book -> book.getBookTags().containsAll(Arrays.asList(searchTags)))
+                .collect(Collectors.toUnmodifiableList());
+    }
 
     /**
      * Searches for books where at least one of the authors has full name that contains the provided string.
@@ -84,14 +138,14 @@ public class BookController {
      * Validates the provided input by calling methods to validate each parameter separately.
      * If all are valid creates an DownloadableEBook and adds it to the repository.
      *
-     * @param bookISBN       String representation of unique book identifier.
-     * @param bookTitle      Name of the book.
-     * @param summary        Short info about what the book is about.
-     * @param authors        A list of one or more authors.
-     * @param bookGenre     A list of one or more book genres.
-     * @param bookTags A list of one or more book categories.
-     * @param readLink       String representation of the link where the book can be read.
-     * @param downloadLink   String representing the link where the book can be downloaded from.
+     * @param bookISBN     String representation of unique book identifier.
+     * @param bookTitle    Name of the book.
+     * @param summary      Short info about what the book is about.
+     * @param authors      A list of one or more authors.
+     * @param bookGenre    A list of one or more book genres.
+     * @param bookTags     A list of one or more book categories.
+     * @param readLink     String representation of the link where the book can be read.
+     * @param downloadLink String representing the link where the book can be downloaded from.
      * @return Message describing whether the operation was successful or not.
      */
     public String addDownloadableEBook(String bookISBN, String bookTitle, String summary,
@@ -113,13 +167,13 @@ public class BookController {
      * Validates the provided input by calling methods to validate each parameter separately.
      * If all are valid creates an EBook and adds it to the repository.
      *
-     * @param bookISBN       String representation of unique book identifier.
-     * @param bookTitle      Name of the book.
-     * @param summary        Short info about what the book is about.
-     * @param authors        A list of one or more authors.
-     * @param bookGenre     A list of one or more book genres.
-     * @param bookTags A list of one or more book categories.
-     * @param readLink       String representation of the link where the book can be read.
+     * @param bookISBN  String representation of unique book identifier.
+     * @param bookTitle Name of the book.
+     * @param summary   Short info about what the book is about.
+     * @param authors   A list of one or more authors.
+     * @param bookGenre A list of one or more book genres.
+     * @param bookTags  A list of one or more book categories.
+     * @param readLink  String representation of the link where the book can be read.
      * @return Message describing whether the operation was successful or not.
      */
     public String addEBook(String bookISBN, String bookTitle, String summary,
@@ -146,7 +200,7 @@ public class BookController {
      * @param bookTitle      Name of the book.
      * @param summary        Short info about what the book is about.
      * @param authors        A list of one or more authors.
-     * @param bookGenre     A list of one or more book genres.
+     * @param bookGenre      A list of one or more book genres.
      * @param bookCategories A list of one or more book categories.
      * @param totalCopies    Amount of copies added to the library.
      * @return Message saying the book was added on success or saying that the process has failed.
@@ -194,7 +248,7 @@ public class BookController {
      * @param bookTitle      String representation of the title of the book.
      * @param summary        Short info describing the book.
      * @param authors        List of objects of type Author with length at least one.
-     * @param bookGenre     List of objects of type BookGenre with length at least one.
+     * @param bookGenre      List of objects of type BookGenre with length at least one.
      * @param bookCategories List of objects of type BookCategory with length at least one.
      * @return true if all parameters are valid, otherwise on the first invalid operator
      * prints error message and returns false.
@@ -225,7 +279,7 @@ public class BookController {
             return false;
         }
 
-        if (areGenresInvalid(bookGenre)) {
+        if (isGenreInvalid(bookGenre)) {
             System.out.println("The provided genre/s of the book are not valid. " +
                     "Please provide at least one valid book genre.");
             return false;
@@ -256,7 +310,7 @@ public class BookController {
      * @param bookGenre Should be A list with objects of type BookGenre.
      * @return true if there is at least one genre in the list, otherwise - false.
      */
-    private boolean areGenresInvalid(BookGenre bookGenre) {
+    private boolean isGenreInvalid(BookGenre bookGenre) {
         return bookGenre == null;
     }
 
@@ -318,5 +372,4 @@ public class BookController {
     private boolean isStringValid(String strToValidate) {
         return strToValidate != null && !strToValidate.isBlank();
     }
-
 }
