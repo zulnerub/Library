@@ -17,9 +17,9 @@ public class UserRegistryForm {
         this.ISBN = ISBN;
     }
 
-    public UserRegistryForm(String username, String ISBN, int endTime) {
+    public UserRegistryForm(String username, String ISBN,LocalDate startDate, int endTime) {
         this(username, ISBN);
-        this.startDate = LocalDate.now();
+        this.startDate = startDate;
         this.endDate = startDate.plusDays(endTime);
     }
 

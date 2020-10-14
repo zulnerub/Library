@@ -138,16 +138,6 @@ public class BookController {
     }
 
     /**
-     * Validates the link with a regular expression for links.
-     *
-     * @param bookLink String representation of a link.
-     * @return true if the link matches the regexp or false if doesn't.
-     */
-    private boolean isLinkValid(String bookLink) {
-        return Pattern.matches("^(http)(s)*://(www.)*([a-z0-9]+.)+[a-z]+(:[0-9]{1,4})*", bookLink);
-    }
-
-    /**
      * Validates the provided input for creating a paper book if data is valid
      * adds the book to the library and returns a success message, otherwise
      * - failure message.
@@ -174,6 +164,16 @@ public class BookController {
         }
 
         return "Adding book failed.";
+    }
+
+    /**
+     * Validates the link with a regular expression for links.
+     *
+     * @param bookLink String representation of a link.
+     * @return true if the link matches the regexp or false if doesn't.
+     */
+    private boolean isLinkValid(String bookLink) {
+        return Pattern.matches("^(http)(s)*://(www.)*([a-z0-9]+.)+[a-z]+(:[0-9]{1,4})*", bookLink);
     }
 
     /**
@@ -318,4 +318,5 @@ public class BookController {
     private boolean isStringValid(String strToValidate) {
         return strToValidate != null && !strToValidate.isBlank();
     }
+
 }

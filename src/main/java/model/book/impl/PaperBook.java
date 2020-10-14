@@ -27,23 +27,18 @@ public class PaperBook extends Book {
     }
 
     /**
-     * @return the current amount of available copies of the book.
+     * @return Get the value of the books free at the moment.
      */
-    public int freeCopies() {
+    public int getCurrentlyAvailable() {
         return currentlyAvailable;
     }
 
     /**
-     * Removes one copy from the available copies whe book is offered or rented.
+     * Sets the modified amount of copies of the book after borrowing or returning it.
+     *
+     * @param currentlyAvailable New amount of free copies after borrow or return operations.
      */
-    public void removeOneCopyFromLibrary() {
-        currentlyAvailable -= 1;
-    }
-
-    /**
-     * Makes one more copy available when a copy is returned by the user.
-     */
-    public void addOneCopyToLibrary() {
-        currentlyAvailable += 1;
+    public void setCurrentlyAvailable(int currentlyAvailable) {
+        this.currentlyAvailable = currentlyAvailable;
     }
 }

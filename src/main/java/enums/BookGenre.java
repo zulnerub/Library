@@ -5,22 +5,9 @@ package enums;
  */
 public enum BookGenre {
 
-    DRAMA("drama"),
-    HORROR("horror"),
-    SCI_FI("sci_fi"),
-    SCIENCE("science"),
-    FANTASY("fantasy");
-
-    String simpleName;
-
-    BookGenre(String genreName) {
-        simpleName = genreName;
-    }
-
-    /**
-     * @return String representation of the name of the genre.
-     */
-    public String getSimpleName() {
-        return simpleName;
-    }
+    DRAMA,
+    HORROR,
+    SCI_FI,
+    SCIENCE,
+    FANTASY
 }
