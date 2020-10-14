@@ -58,7 +58,7 @@ public class BookController {
                 .map(Enum::name)
                 .collect(Collectors.toList());
 
-        if (allGenreNames.contains(genreName)) {
+        if (allGenreNames.contains(genreName.toUpperCase())) {
             return bookRepository.getAllBooksInLibrary().stream()
                     .filter(book -> book.getGenre().name().equalsIgnoreCase(genreName))
                     .collect(Collectors.toUnmodifiableList());

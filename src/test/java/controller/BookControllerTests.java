@@ -4,9 +4,7 @@ import enums.BookGenre;
 import enums.BookTags;
 import model.book.Book;
 import model.user.impl.Author;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import repository.UserRepository;
 
 import java.time.LocalDate;
@@ -57,8 +55,9 @@ public class BookControllerTests {
                 "http://stillearth.online.download.com");
     }
 
+    @DisplayName("Search for book by author first name - blank string.")
     @Test
-    void shouldReturn_EmptyList_ForInput_BlankString(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_BlankString(){
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("   ");
 
@@ -66,8 +65,9 @@ public class BookControllerTests {
         Assertions.assertEquals(0, result.size());
     }
 
+    @DisplayName("Search for book by author first name - empty string.")
     @Test
-    void shouldReturn_EmptyList_ForInput_EmptyString(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_EmptyString(){
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("");
 
@@ -75,8 +75,9 @@ public class BookControllerTests {
         Assertions.assertEquals(0, result.size());
     }
 
+    @DisplayName(("Search for book by author first name - null"))
     @Test
-    void shouldReturn_EmptyList_ForInput_Null(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_Null(){
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName(null);
 
@@ -84,8 +85,9 @@ public class BookControllerTests {
         Assertions.assertEquals(0, result.size());
     }
 
+    @DisplayName("Search for book by author first name - 'George'")
     @Test
-    void shouldReturn_ListSizeOne_WithAuthorFirstNameContaining_George(){
+    void searchByFirstName_ShouldReturn_ListSizeOne_ForInput_George(){
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("George");
         String authorName = result.get(0).getAuthors().get(0).getFirstName();
@@ -95,8 +97,9 @@ public class BookControllerTests {
         Assertions.assertEquals("George", authorName);
     }
 
+    @DisplayName("Search for book by first name - 'o'")
     @Test
-    void shouldReturn_ListSizeThree_WithAuthorFirstNameContaining_O(){
+    void searchByFirstName_ShouldReturn_ListSizeThree_ForInput_O(){
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("o");
         String authorNameBookOne = result.get(0).getAuthors().get(0).getFirstName();
@@ -109,4 +112,167 @@ public class BookControllerTests {
         Assertions.assertEquals("Joan", authorNameBookTwo);
         Assertions.assertEquals("Joan", authorNameBookThree);
     }
+
+    // last name test
+
+    @DisplayName("Search for book by author last name - blank string")
+    @Test
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_BlankString(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsLastName("   ");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author last name - empty string")
+    @Test
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_EmptyString(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsLastName("");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author last name - null")
+    @Test
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_Null(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsLastName(null);
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author last name - 'Martin'")
+    @Test
+    void searchByLastName_ShouldReturn_ListSizeOne_ForInput_Martin(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsLastName("Martin");
+        String authorName = result.get(0).getAuthors().get(0).getLastName();
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Martin", authorName);
+    }
+
+    @DisplayName("Search for book by author last name - 'i'")
+    @Test
+    void searchByLastName_ShouldReturn_ListSizeThree_ForInput_I(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsLastName("i");
+        String authorNameBookOne = result.get(0).getAuthors().get(0).getLastName();
+        String authorNameBookTwo = result.get(1).getAuthors().get(0).getLastName();
+        String authorNameBookThree = result.get(2).getAuthors().get(0).getLastName();
+
+        //Then
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertEquals("Martin", authorNameBookOne);
+        Assertions.assertEquals("Rolling", authorNameBookTwo);
+        Assertions.assertEquals("Rolling", authorNameBookThree);
+    }
+
+    // full  name test
+
+    @DisplayName("Search for book by author full name - blank string")
+    @Test
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_BlankString(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsFullName("   ");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author full name - empty string")
+    @Test
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_EmptyString(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsFullName("");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author full name - null")
+    @Test
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_Null(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsFullName(null);
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by author full name - George Martin")
+    @Test
+    void searchByFullName_ShouldReturn_ListSizeOne_ForInput_GeorgeMartin(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsFullName("George Martin");
+        String authorName = result.get(0).getAuthors().get(0).getFullName();
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("George Martin", authorName);
+    }
+
+    @DisplayName("Search for book by author full name - o") // change input
+    @Test
+    void searchByFullName_ShouldReturn_ListSizeThree_ForInput_O(){
+        //When
+        List<Book> result = bookController.searchBookByAuthorsFullName("o");
+        String authorNameBookOne = result.get(0).getAuthors().get(0).getFullName();
+        String authorNameBookTwo = result.get(1).getAuthors().get(0).getFullName();
+        String authorNameBookThree = result.get(2).getAuthors().get(0).getFullName();
+
+        //Then
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertEquals("George Martin", authorNameBookOne);
+        Assertions.assertEquals("Joan Rolling", authorNameBookTwo);
+        Assertions.assertEquals("Joan Rolling", authorNameBookThree);
+    }
+
+    //genre test
+
+    @DisplayName("Search for book by genre name - sci_fi")
+    @Test
+    void searchByGenreName_ShouldReturnOneCorrectBook_ForInputCorrectGenre(){
+        //When
+        List<Book> result = bookController.searchByBookGenre("sci_fi");
+        String bookIsbnExpected = "1234-7";
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(bookIsbnExpected, result.get(0).getISBN());
+    }
+
+    @DisplayName("Search for book by genre name - drama")
+    @Test
+    void searchByGenreName_ShouldReturnEmptyList_ForInputCorrectGenre(){
+        //When
+        List<Book> result = bookController.searchByBookGenre("drama");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by genre name - ma")
+    @Test
+    void searchByGenreName_ShouldReturnEmptyList_ForInputNotExistingGenre(){
+        //When
+        List<Book> result = bookController.searchByBookGenre("ma");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by genre name - null")
+    @Test
+    void searchByGenreName_ShouldReturnEmptyList_ForInputNull(){
+        //Then
+        Assertions.assertThrows(NullPointerException.class, () -> bookController.searchByBookGenre(null));
+    }
+
+
 }
