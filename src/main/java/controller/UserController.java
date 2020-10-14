@@ -254,12 +254,4 @@ public class UserController {
                 .findFirst()
                 .orElse(null);
     }
-
-    /**
-     * @return Gets the user repository.
-     * Unfortunately i need this in the book repository and i have not found any other way so far to pass the reference. :[
-     */
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
 }
