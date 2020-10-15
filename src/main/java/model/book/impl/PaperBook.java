@@ -19,9 +19,9 @@ public class PaperBook extends Book {
     public PaperBook(String ISBN, String title, String summary,
                      List<Author> authors,
                      BookGenre genre,
-                     List<BookTags> categories,
+                     List<BookTags> tags,
                      int currentlyAvailable, int totalCopies) {
-        super(ISBN, title, summary, authors, genre, categories);
+        super(ISBN, title, summary, authors, genre, tags);
         this.currentlyAvailable = currentlyAvailable;
         this.totalCopies = totalCopies;
     }

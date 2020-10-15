@@ -19,9 +19,9 @@ public class BookControllerTests {
 
 
     @BeforeEach
-    void init(){
+    void init() {
         LocalDate ld = LocalDate.of(1965, 1, 1);
-        LocalDate sLd = LocalDate.of(1972,3,22);
+        LocalDate sLd = LocalDate.of(1972, 3, 22);
 
         Author georgeMartin = new Author("George", "Martin", ld, null);
         Author joanRolling = new Author("Joan", "Rolling", sLd, null);
@@ -57,7 +57,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author first name - blank string.")
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_BlankString(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_BlankString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("   ");
 
@@ -67,7 +67,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author first name - empty string.")
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_EmptyString(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_EmptyString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("");
 
@@ -77,7 +77,7 @@ public class BookControllerTests {
 
     @DisplayName(("Search for book by author first name - null"))
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_Null(){
+    void searchByFirstName_ShouldReturn_EmptyList_ForInput_Null() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName(null);
 
@@ -87,7 +87,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author first name - 'George'")
     @Test
-    void searchByFirstName_ShouldReturn_ListSizeOne_ForInput_George(){
+    void searchByFirstName_ShouldReturn_ListSizeOne_ForInput_George() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("George");
         String authorName = result.get(0).getAuthors().get(0).getFirstName();
@@ -99,7 +99,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by first name - 'o'")
     @Test
-    void searchByFirstName_ShouldReturn_ListSizeThree_ForInput_O(){
+    void searchByFirstName_ShouldReturn_ListSizeThree_ForInput_O() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFirstName("o");
         String authorNameBookOne = result.get(0).getAuthors().get(0).getFirstName();
@@ -117,7 +117,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - blank string")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_BlankString(){
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_BlankString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsLastName("   ");
 
@@ -127,7 +127,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - empty string")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_EmptyString(){
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_EmptyString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsLastName("");
 
@@ -137,7 +137,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - null")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_Null(){
+    void searchByLastName_ShouldReturn_EmptyList_ForInput_Null() {
         //When
         List<Book> result = bookController.searchBookByAuthorsLastName(null);
 
@@ -147,7 +147,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - 'Martin'")
     @Test
-    void searchByLastName_ShouldReturn_ListSizeOne_ForInput_Martin(){
+    void searchByLastName_ShouldReturn_ListSizeOne_ForInput_Martin() {
         //When
         List<Book> result = bookController.searchBookByAuthorsLastName("Martin");
         String authorName = result.get(0).getAuthors().get(0).getLastName();
@@ -159,7 +159,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - 'i'")
     @Test
-    void searchByLastName_ShouldReturn_ListSizeThree_ForInput_I(){
+    void searchByLastName_ShouldReturn_ListSizeThree_ForInput_I() {
         //When
         List<Book> result = bookController.searchBookByAuthorsLastName("i");
         String authorNameBookOne = result.get(0).getAuthors().get(0).getLastName();
@@ -177,7 +177,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - blank string")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_BlankString(){
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_BlankString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFullName("   ");
 
@@ -187,7 +187,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - empty string")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_EmptyString(){
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_EmptyString() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFullName("");
 
@@ -197,7 +197,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - null")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_Null(){
+    void searchByFullName_ShouldReturn_EmptyList_ForInput_Null() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFullName(null);
 
@@ -207,7 +207,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - George Martin")
     @Test
-    void searchByFullName_ShouldReturn_ListSizeOne_ForInput_GeorgeMartin(){
+    void searchByFullName_ShouldReturn_ListSizeOne_ForInput_GeorgeMartin() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFullName("George Martin");
         String authorName = result.get(0).getAuthors().get(0).getFullName();
@@ -219,7 +219,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - o") // change input
     @Test
-    void searchByFullName_ShouldReturn_ListSizeThree_ForInput_O(){
+    void searchByFullName_ShouldReturn_ListSizeThree_ForInput_O() {
         //When
         List<Book> result = bookController.searchBookByAuthorsFullName("o");
         String authorNameBookOne = result.get(0).getAuthors().get(0).getFullName();
@@ -237,7 +237,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by genre name - sci_fi")
     @Test
-    void searchByGenreName_ShouldReturnOneCorrectBook_ForInputCorrectGenre(){
+    void searchByGenreName_ShouldReturnOneCorrectBook_ForInputCorrectGenre() {
         //When
         List<Book> result = bookController.searchByBookGenre("sci_fi");
         String bookIsbnExpected = "1234-7";
@@ -249,7 +249,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by genre name - drama")
     @Test
-    void searchByGenreName_ShouldReturnEmptyList_ForInputCorrectGenre(){
+    void searchByGenreName_ShouldReturnEmptyList_ForInputCorrectGenre() {
         //When
         List<Book> result = bookController.searchByBookGenre("drama");
 
@@ -259,7 +259,7 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by genre name - ma")
     @Test
-    void searchByGenreName_ShouldReturnEmptyList_ForInputNotExistingGenre(){
+    void searchByGenreName_ShouldReturnEmptyList_ForInputNotExistingGenre() {
         //When
         List<Book> result = bookController.searchByBookGenre("ma");
 
@@ -269,10 +269,87 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by genre name - null")
     @Test
-    void searchByGenreName_ShouldReturnEmptyList_ForInputNull(){
+    void searchByGenreName_ShouldReturnEmptyList_ForInputNull() {
         //Then
         Assertions.assertThrows(NullPointerException.class, () -> bookController.searchByBookGenre(null));
     }
 
+    @DisplayName("Search for book by title name - empty string")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputEmptyString() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by title name - blank string")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputBlankString() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("   ");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by title name - null")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputNull() {
+        //When
+        List<Book> result = bookController.searchByBookTitle(null);
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by title name - Title not exists")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputNotExistingTitle() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("nogame of nothrones");
+
+        //Then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @DisplayName("Search for book by title name - existing exact title")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputExactTitleExisting() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("Game of thrones");
+        String titleResult = result.get(0).getTitle();
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Game of thrones", titleResult);
+    }
+
+    @DisplayName("Search for book by title name - part of existing title")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputPartOfExistingTitle() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("hrone");
+        String titleResult = result.get(0).getTitle();
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Game of thrones", titleResult);
+    }
+
+    // tags
+
+    @DisplayName("Search for book by title name - part of existing title")
+    @Test
+    void searchByTitleName_ShouldReturnEmptyList_ForInputPartOfExistingTitle() {
+        //When
+        List<Book> result = bookController.searchByBookTitle("hrone");
+        String titleResult = result.get(0).getTitle();
+
+        //Then
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Game of thrones", titleResult);
+    }
 
 }

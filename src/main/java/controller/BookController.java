@@ -39,11 +39,10 @@ public class BookController {
      * @return List of books matching the criteria or empty list.
      */
     public List<Book> searchByBookTitle(String title) {
-
-        return bookRepository.getAllBooksInLibrary()
+        return isStringValid(title) ? bookRepository.getAllBooksInLibrary()
                 .stream()
                 .filter(book -> book.getTitle().contains(title))
-                .collect(Collectors.toUnmodifiableList());
+                .collect(Collectors.toUnmodifiableList()) : new ArrayList<>();
     }
 
     /**
@@ -79,8 +78,17 @@ public class BookController {
             return new ArrayList<>();
         }
 
+        List<String> searchedTags = Arrays.asList(searchTags);
+
         return bookRepository.getAllBooksInLibrary().stream()
-                .filter(book -> book.getBookTags().containsAll(Arrays.asList(searchTags)))
+                .filter(book -> book.getBookTags().stream()
+                        .findAny(bookTags -> {
+                            searchedTags.forEach(tag -> {
+                                if (tag.equalsIgnoreCase(bookTag)){
+                                    return
+                                }
+                            });
+                        }))
                 .collect(Collectors.toUnmodifiableList());
     }
 
