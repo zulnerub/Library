@@ -59,14 +59,55 @@ public class BookRepositoryTests {
             "http://earthstood.online.read.com",
             "http://stillearth.online.download.com");
 
+    @DisplayName("request a book from the repository with valid input and get success message for" +
+            "pending request.")
+    @Test
+    void requestBook_ShouldReturnMessageFor_PendingBookRequest() {
+        //Given
+        gameOfThrones.setCurrentlyAvailable(0);
+        bookRepository.addBookToLibrary(gameOfThrones);
+
+        String username = "validUsername";
+        String bookISBN = "1234-5";
+
+        String expectedMessage = "You are 1 in line for that book.\n" +
+                "Estimated date the book will become available: " + LocalDate.now().plusDays(21).toString();
+
+        //When
+        String actualMessage = bookRepository.requestBook(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("request a book from the repository with valid input and get success message " +
+            "for completed request.")
+    @Test
+    void requestBook_ShouldReturnMessageFor_CompleteBookRequest() {
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+
+        String username = "validUsername";
+        String bookISBN = "1234-5";
+
+        String expectedMessage = "You are first in line and there is available book in stock. " +
+                "You have 3 days to borrow the book.";
+
+        //When
+        String actualMessage = bookRepository.requestBook(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
     @DisplayName("call method getDueDate on collection of forms with valid existing username" +
             "but valid not existing ISBN to simulate not found input")
     @Test
-    void getDueDate_ShouldThrowCustomException_NoRecordFoundForISBN(){
+    void getDueDate_ShouldThrowCustomException_NoRecordFoundForISBN() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
-        LocalDate startDate = LocalDate.of(2000,1,1);
+        LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
 
@@ -84,11 +125,11 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with valid not existing username to simulate not found input")
     @Test
-    void getDueDate_ShouldThrowCustomException_NoRecordFoundForUsername(){
+    void getDueDate_ShouldThrowCustomException_NoRecordFoundForUsername() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
-        LocalDate startDate = LocalDate.of(2000,1,1);
+        LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
 
@@ -106,7 +147,7 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with username = blank string")
     @Test
-    void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionEmpty(){
+    void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionEmpty() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
@@ -124,7 +165,7 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with username = blank string")
     @Test
-    void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionNull(){
+    void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionNull() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
@@ -140,11 +181,11 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with username = blank string")
     @Test
-    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameBlankString(){
+    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameBlankString() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
-        LocalDate startDate = LocalDate.of(2000,1,1);
+        LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
 
@@ -162,11 +203,11 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with username = empty string")
     @Test
-    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameEmptyString(){
+    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameEmptyString() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
-        LocalDate startDate = LocalDate.of(2000,1,1);
+        LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
 
@@ -184,11 +225,11 @@ public class BookRepositoryTests {
 
     @DisplayName("call method getDueDate on collection of forms with username = null")
     @Test
-    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameNull(){
+    void getDueDate_ShouldThrowCustomException_InvalidInput_UsernameNull() {
         //Given
         String username = "validUsername";
         String bookISBN = "1111-1";
-        LocalDate startDate = LocalDate.of(2000,1,1);
+        LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
 
@@ -206,7 +247,7 @@ public class BookRepositoryTests {
 
     @DisplayName("when provided with null method freeCopies() should throw exception")
     @Test
-    void freeCopies_ShouldThrowCustomException_Input_Null(){
+    void freeCopies_ShouldThrowCustomException_Input_Null() {
         //Given
         String expectedMessage = "Must provide an object of type PaperBook.";
 
@@ -219,7 +260,7 @@ public class BookRepositoryTests {
 
     @DisplayName("check if returns correct amount of paper book copies in the library")
     @Test
-    void freeCopies_ShouldBe_Five(){
+    void freeCopies_ShouldBe_Five() {
         //When
         bookRepository.addBookToLibrary(gameOfThrones);
 
@@ -229,7 +270,7 @@ public class BookRepositoryTests {
 
     @DisplayName("add one book to library and check if size of library is one")
     @Test
-    void getAllBooksInLibrary_ListShouldBeWithSizeOne(){
+    void getAllBooksInLibrary_ListShouldBeWithSizeOne() {
         //When
         bookRepository.addBookToLibrary(gameOfThrones);
 

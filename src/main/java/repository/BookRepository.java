@@ -85,7 +85,6 @@ public class BookRepository {
      * @return Message corresponding to the applied action.
      */
     public String requestBook(String username, String ISBN) {
-
         if (isNotPaperBook(ISBN)) {
             return "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
         }
@@ -107,7 +106,7 @@ public class BookRepository {
 
         requestedBooks.put(++requestIndex, new UserRegistryForm(username, ISBN));
 
-        int placeInQueue = getPlaceInQueue(username, ISBN);
+        int placeInQueue = getPlaceInQueue(username, ISBN) + 1;
 
         LocalDate estimatedDateAvailable = LocalDate.now().plusDays(placeInQueue * AVERAGE_DAYS_BOOK_IS_RENTED_PER_USER);
 
