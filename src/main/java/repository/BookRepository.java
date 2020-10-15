@@ -288,7 +288,7 @@ public class BookRepository {
      * - Making available books not borrowed by the users after being offered to them 3 days ago.
      * - Offering books to users who are in line if a book is made available and if they are not in the banned list.
      */
-    private void changeDay() {
+    public void changeDay() {
         currentDate = LocalDate.now().plusDays(1);
 
         syncBorrowedBooks();

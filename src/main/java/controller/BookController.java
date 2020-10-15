@@ -2,6 +2,7 @@ package controller;
 
 import enums.BookTags;
 import enums.BookGenre;
+import exception.CustomException;
 import model.book.Book;
 import model.book.impl.DownloadableEBook;
 import model.book.impl.EBook;
@@ -10,9 +11,7 @@ import model.user.impl.Author;
 import repository.BookRepository;
 import repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -74,22 +73,21 @@ public class BookController {
      */
     public List<Book> searchByBookTags(String... searchTags) {
 
-        if (searchTags.length < 1) {
+        if (searchTags == null || searchTags.length < 1) {
             return new ArrayList<>();
         }
 
         List<String> searchedTags = Arrays.asList(searchTags);
 
-        return bookRepository.getAllBooksInLibrary().stream()
-                .filter(book -> book.getBookTags().stream()
-                        .findAny(bookTags -> {
-                            searchedTags.forEach(tag -> {
-                                if (tag.equalsIgnoreCase(bookTag)){
-                                    return
-                                }
-                            });
-                        }))
-                .collect(Collectors.toUnmodifiableList());
+        Set<Book> foundBooks = new HashSet<>();
+
+        for (String tag : searchedTags) {
+            foundBooks.addAll(bookRepository.getAllBooksInLibrary().stream()
+                    .filter(book -> book.getBookTags().contains(tag.toUpperCase()))
+                    .collect(Collectors.toList()));
+        }
+
+        return new ArrayList<>(foundBooks);
     }
 
     /**
@@ -216,15 +214,16 @@ public class BookController {
      * @param summary        Short info about what the book is about.
      * @param authors        A list of one or more authors.
      * @param bookGenre      A list of one or more book genres.
-     * @param bookCategories A list of one or more book categories.
+     * @param bookTags A list of one or more book categories.
      * @param totalCopies    Amount of copies added to the library.
      * @return Message saying the book was added on success or saying that the process has failed.
      */
     public String addPaperBook(String bookISBN, String bookTitle, String summary,
-                               List<Author> authors, BookGenre bookGenre, List<BookTags> bookCategories,
+                               List<Author> authors, BookGenre bookGenre, List<BookTags> bookTags,
                                int totalCopies) {
-        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenre, bookCategories) && areCopiesAtLeastOne(totalCopies)) {
-            PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenre, bookCategories,
+
+        if (isBookValid(bookISBN, bookTitle, summary, authors, bookGenre, bookTags) && areCopiesAtLeastOne(totalCopies)) {
+            PaperBook newPaperBook = new PaperBook(bookISBN, bookTitle, summary, authors, bookGenre, bookTags,
                     totalCopies, totalCopies);
 
             bookRepository.addBookToLibrary(newPaperBook);
@@ -242,7 +241,7 @@ public class BookController {
      * @return true if the link matches the regexp or false if doesn't.
      */
     private boolean isLinkValid(String bookLink) {
-        return Pattern.matches("^(http)(s)*://(www.)*([a-z0-9]+.)+[a-z]+(:[0-9]{1,4})*", bookLink);
+        return bookLink != null && Pattern.matches("^(http)(s)*://(www.)*([a-z0-9]+.)+[a-z]+(:[0-9]{1,4})*", bookLink);
     }
 
     /**
@@ -270,40 +269,34 @@ public class BookController {
      */
     private boolean isBookValid(String bookISBN, String bookTitle, String summary,
                                 List<Author> authors, BookGenre bookGenre, List<BookTags> bookCategories) {
-        if (IsISBNInvalid(bookISBN)) {
-            System.out.println(("The provided ISBN was not valid. " +
-                    "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'."));
-            return false;
+        if (isISBNInvalid(bookISBN)) {
+            throw new CustomException("The provided ISBN was not valid. " +
+                    "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'.");
         }
 
         if (isTitleInvalid(bookTitle)) {
-            System.out.println("The provided book title is not valid. " +
+            throw new CustomException("The provided book title is not valid. " +
                     "The title should be at least 3 symbols long.");
-            return false;
         }
 
         if (isSummaryInvalid(summary)) {
-            System.out.println("The provided summary is not valid. " +
+            throw new CustomException("The provided summary is not valid. " +
                     "The summary must be at least 50 symbols in length.");
-            return false;
         }
 
         if (areAuthorsInvalid(authors)) {
-            System.out.println("The provided author/authors is/are not valid. " +
+            throw new CustomException("The provided author/authors is/are not valid. " +
                     "Please provide at least one, valid author to add a book to the library.");
-            return false;
         }
 
         if (isGenreInvalid(bookGenre)) {
-            System.out.println("The provided genre/s of the book are not valid. " +
+            throw new CustomException("The provided genre/s of the book are not valid. " +
                     "Please provide at least one valid book genre.");
-            return false;
         }
 
         if (areBookTagsInvalid(bookCategories)) {
-            System.out.println("The provided book category/ies are not valid. " +
+            throw new CustomException("The provided book category/ies are not valid. " +
                     "Please provide at least one valid category to add a book to the library.");
-            return false;
         }
 
         return true;
@@ -346,7 +339,7 @@ public class BookController {
      * @return true if the provided string is valid or false if not.
      */
     private boolean isSummaryInvalid(String summary) {
-        return !isStringValid(summary) || summary.length() <= 50;
+        return !(isStringValid(summary) && summary.length() > 50);
     }
 
     /**
@@ -356,7 +349,7 @@ public class BookController {
      * @return true if valid, otherwise - false
      */
     private boolean isTitleInvalid(String bookTittle) {
-        return !isStringValid(bookTittle) || bookTittle.length() <= 3;
+        return !(isStringValid(bookTittle) && bookTittle.length() > 3);
     }
 
     /**
@@ -365,7 +358,7 @@ public class BookController {
      * @param bookISBN String representation of the ISBN - should be in format "####-#".
      * @return true if input is valid otherwise -false.
      */
-    private boolean IsISBNInvalid(String bookISBN) {
+    private boolean isISBNInvalid(String bookISBN) {
         boolean result = true;
 
         if (isStringValid(bookISBN) && Pattern.matches("^([0-9]){4}-[0-9]", bookISBN.trim())) {
