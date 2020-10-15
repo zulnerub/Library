@@ -21,11 +21,11 @@ public class BookControllerTests {
 
     @BeforeEach
     void init() {
-        LocalDate ld = LocalDate.of(1965, 1, 1);
-        LocalDate sLd = LocalDate.of(1972, 3, 22);
+        LocalDate georgeBirthDate = LocalDate.of(1965, 1, 1);
+        LocalDate joanBirthDate = LocalDate.of(1972, 3, 22);
 
-        Author georgeMartin = new Author("George", "Martin", ld, null);
-        Author joanRolling = new Author("Joan", "Rolling", sLd, null);
+        Author georgeMartin = new Author("George", "Martin", georgeBirthDate, null);
+        Author joanRolling = new Author("Joan", "Rolling", joanBirthDate, null);
 
         bookController.addPaperBook(
                 "1234-5",

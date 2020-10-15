@@ -1,5 +1,6 @@
 package repository;
 
+import exception.CustomException;
 import model.book.Book;
 import model.book.impl.PaperBook;
 import model.common.UserRegistryForm;
@@ -188,7 +189,7 @@ public class BookRepository {
     }
 
     /**
-     * Finds a borrow form by given username and ISBN and
+     * Finds a form by given username and ISBN and
      * if found gets the due date.
      *
      * @param username Unique user identifier.
@@ -196,32 +197,54 @@ public class BookRepository {
      * @return The due date of the form or null if not found.
      */
     public LocalDate getDueDate(String username, String ISBN, Map<String, List<UserRegistryForm>> formCollection) {
-        UserRegistryForm userBorrowForm = formCollection.get(username).stream()
-                .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
-                .findFirst()
-                .orElse(null);
+        validateString(username, "Username is not valid.");
 
-        return userBorrowForm != null ? userBorrowForm.getEndDate() : null;
+        validateString(ISBN, "ISBN is missing or not valid.");
+
+        validateFormCollection(formCollection, "Provided form collection is missing or empty.");
+
+        if (!formCollection.containsKey(username)){
+            throw new CustomException("Username has no records.");
+        }
+
+        UserRegistryForm userBorrowForm =
+                formCollection.get(username).stream()
+                        .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
+                        .findFirst()
+                        .orElse(null);
+
+        if (userBorrowForm == null) {
+            throw new CustomException("No such book for this user.");
+        }
+
+        return userBorrowForm.getEndDate();
     }
 
     /**
-     * Calculates the place of the user in the queue for given book.
+     * Checks the form collection if null or empty and if any are true throws exception
+     * with the provided message.
      *
-     * @param username Unique identifier of the user.
-     * @param ISBN     Unique identifier of the book.
-     * @return Place in queue for the user - int.
+     * @param formCollection Map holding records about action in the library stored with
+     *                       username as a key pointing to the user in the form.
+     * @param errorMessage   Message explaining the nature of the error.
      */
-    public int getPlaceInQueue(String username, String ISBN) {
-        List<UserRegistryForm> list = requestedBooks.values().stream()
-                .filter(form -> form.getISBN().equals(ISBN))
-                .collect(Collectors.toList());
+    private void validateFormCollection(Map<String, List<UserRegistryForm>> formCollection, String errorMessage) {
+        if (formCollection == null || formCollection.isEmpty()) {
+            throw new CustomException(errorMessage);
+        }
+    }
 
-        UserRegistryForm userRegistryForm = list.stream()
-                .filter(f -> f.getUsername().equals(username))
-                .findFirst()
-                .orElse(null);
-
-        return list.indexOf(userRegistryForm);
+    /**
+     * Checks the provided string if not null, empty or blank
+     * and if any are true throws exception, otherwise continues.
+     *
+     * @param input        Unique user identifier.
+     * @param errorMessage String literal explaining the error if the provided input is not valid.
+     */
+    private void validateString(String input, String errorMessage) {
+        if (input == null || input.isBlank()) {
+            throw new CustomException(errorMessage);
+        }
     }
 
     /**
@@ -231,9 +254,11 @@ public class BookRepository {
      * @param book Object of type book.
      */
     public void addBookToLibrary(Book book) {
-        if (book != null) {
-            books.putIfAbsent(book.getISBN(), book);
+        if (book == null) {
+            throw new CustomException("Book can not be null. Library takes only books.");
         }
+
+        books.putIfAbsent(book.getISBN(), book);
     }
 
     /**
@@ -247,7 +272,30 @@ public class BookRepository {
      * @return the current amount of available copies of the book.
      */
     public int freeCopies(PaperBook paperBook) {
+        if (paperBook == null) {
+            throw new CustomException("Must provide an object of type PaperBook.");
+        }
         return paperBook.getCurrentlyAvailable();
+    }
+
+    /**
+     * Calculates the place of the user in the queue for given book.
+     *
+     * @param username Unique identifier of the user.
+     * @param ISBN     Unique identifier of the book.
+     * @return Place in queue for the user - int.
+     */
+    private int getPlaceInQueue(String username, String ISBN) {
+        List<UserRegistryForm> list = requestedBooks.values().stream()
+                .filter(form -> form.getISBN().equals(ISBN))
+                .collect(Collectors.toList());
+
+        UserRegistryForm userRegistryForm = list.stream()
+                .filter(f -> f.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+
+        return list.indexOf(userRegistryForm);
     }
 
     /**
