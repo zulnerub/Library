@@ -51,6 +51,9 @@ public class BookController {
      * @return List of books matching the criteria or empty list.
      */
     public List<Book> searchByBookGenre(String genreName) {
+        if (genreName == null) {
+            throw new CustomException("Please input name for the genre. Genre can't be null.");
+        }
 
         List<String> allGenreNames = Arrays.stream(BookGenre.values())
                 .map(Enum::name)
@@ -209,13 +212,13 @@ public class BookController {
      * adds the book to the library and returns a success message, otherwise
      * - failure message.
      *
-     * @param bookISBN       String representation of unique book identifier.
-     * @param bookTitle      Name of the book.
-     * @param summary        Short info about what the book is about.
-     * @param authors        A list of one or more authors.
-     * @param bookGenre      A list of one or more book genres.
-     * @param bookTags A list of one or more book categories.
-     * @param totalCopies    Amount of copies added to the library.
+     * @param bookISBN    String representation of unique book identifier.
+     * @param bookTitle   Name of the book.
+     * @param summary     Short info about what the book is about.
+     * @param authors     A list of one or more authors.
+     * @param bookGenre   A list of one or more book genres.
+     * @param bookTags    A list of one or more book categories.
+     * @param totalCopies Amount of copies added to the library.
      * @return Message saying the book was added on success or saying that the process has failed.
      */
     public String addPaperBook(String bookISBN, String bookTitle, String summary,
@@ -295,8 +298,8 @@ public class BookController {
         }
 
         if (areBookTagsInvalid(bookCategories)) {
-            throw new CustomException("The provided book category/ies are not valid. " +
-                    "Please provide at least one valid category to add a book to the library.");
+            throw new CustomException("The provided book tags are not valid. " +
+                    "Please provide at least one valid tag to add a book to the library.");
         }
 
         return true;
@@ -359,6 +362,10 @@ public class BookController {
      * @return true if input is valid otherwise -false.
      */
     private boolean isISBNInvalid(String bookISBN) {
+        if (bookISBN == null) {
+            throw new CustomException("ISBN can't be null.");
+        }
+
         boolean result = true;
 
         if (isStringValid(bookISBN) && Pattern.matches("^([0-9]){4}-[0-9]", bookISBN.trim())) {
@@ -378,6 +385,9 @@ public class BookController {
      * @return true if the provided input is not null and not blank, otherwise returns false.
      */
     private boolean isStringValid(String strToValidate) {
-        return strToValidate != null && !strToValidate.isBlank();
+        if (strToValidate == null || strToValidate.isBlank()) {
+            throw new CustomException("String input can't be null, empty or only white spaces.");
+        }
+        return true;
     }
 }

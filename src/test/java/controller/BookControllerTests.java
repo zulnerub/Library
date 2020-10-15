@@ -11,6 +11,7 @@ import java.util.*;
 
 import static enums.BookGenre.*;
 import static enums.BookTags.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BookControllerTests {
 
@@ -58,32 +59,41 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author first name - blank string.")
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_BlankString() {
+    void searchByFirstName_ShouldThrowCustomException_ForInput_BlankString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFirstName("   ");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFirstName("   "));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author first name - empty string.")
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_EmptyString() {
+    void searchByFirstName_ShouldThrowCustomException_ForInput_EmptyString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFirstName("");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFirstName(""));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName(("Search for book by author first name - null"))
     @Test
-    void searchByFirstName_ShouldReturn_EmptyList_ForInput_Null() {
+    void searchByFirstName_ShouldThrowCustomException_ForInput_Null() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFirstName(null);
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFirstName(null));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author first name - 'George'")
@@ -118,32 +128,42 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author last name - blank string")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_BlankString() {
+    void searchByLastName_ShouldThrowCustomException_ForInput_BlankString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsLastName("   ");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsLastName("   "));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author last name - empty string")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_EmptyString() {
+    void searchByLastName_ShouldThrowCustomException_ForInput_EmptyString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsLastName("");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsLastName(""));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
+
     }
 
     @DisplayName("Search for book by author last name - null")
     @Test
-    void searchByLastName_ShouldReturn_EmptyList_ForInput_Null() {
+    void searchByLastName_ThrowCustomException_ForInput_Null() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsLastName(null);
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsLastName(null));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author last name - 'Martin'")
@@ -178,32 +198,41 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by author full name - blank string")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_BlankString() {
+    void searchByFullName_ThrowCustomException_ForInput_BlankString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFullName("   ");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFullName("   "));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author full name - empty string")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_EmptyString() {
+    void searchByFullName_ShouldThrowCustomException_ForInput_EmptyString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFullName("");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFullName(""));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author full name - null")
     @Test
-    void searchByFullName_ShouldReturn_EmptyList_ForInput_Null() {
+    void searchByFullName_ShouldThrowCustomException_ForInput_Null() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchBookByAuthorsFullName(null);
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchBookByAuthorsFullName(null));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by author full name - George Martin")
@@ -270,39 +299,54 @@ public class BookControllerTests {
 
     @DisplayName("Search for book by genre name - null")
     @Test
-    void searchByGenreName_ShouldReturnEmptyList_ForInputNull() {
+    void searchByGenreName_ShouldThrowCustomException_ForInputNull() {
+        //Given
+        String expectedMessage = "Please input name for the genre. Genre can't be null.";
+
+        //When
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchByBookGenre(null));
+
         //Then
-        Assertions.assertThrows(NullPointerException.class, () -> bookController.searchByBookGenre(null));
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by title name - empty string")
     @Test
-    void searchByTitleName_ShouldReturnEmptyList_ForInputEmptyString() {
+    void searchByTitleName_ShouldThrowCustomException_ForInputEmptyString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchByBookTitle("");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchByBookTitle(""));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by title name - blank string")
     @Test
-    void searchByTitleName_ShouldReturnEmptyList_ForInputBlankString() {
+    void searchByTitleName_ShouldThrowCustomException_ForInputBlankString() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchByBookTitle("   ");
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchByBookTitle("    "));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by title name - null")
     @Test
-    void searchByTitleName_ShouldReturnEmptyList_ForInputNull() {
+    void searchByTitleName_ShouldThrowCustomException_ForInputNull() {
+        //Given
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         //When
-        List<Book> result = bookController.searchByBookTitle(null);
+        Exception exception = assertThrows(CustomException.class, () -> bookController.searchByBookTitle(null));
 
         //Then
-        Assertions.assertEquals(0, result.size());
+        Assertions.assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Search for book by title name - Title not exists")
@@ -421,7 +465,6 @@ public class BookControllerTests {
     @Test
     void isStringInvalid_ShouldThrowCustomException_ForInput_NullISBN() {
         // Given
-        String isbn = null;
         String title = "Sample title";
         String summary = "Sample text for summary to reach valid length. Still too short so writing a few more symbols.";
 
@@ -430,18 +473,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
-        // Then
+        String expectedMessage = "ISBN can't be null.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
-                        isbn,
+                        null,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        List.of(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
+
     }
 
     @DisplayName("Inverted validation for a string literal, ISBN input - empty string")
@@ -457,17 +504,21 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a string literal, ISBN input - blank string")
@@ -483,17 +534,21 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "String input can't be null, empty or only white spaces.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     // tests isISBNInvalid method -> isBookValid -> addPaperBook
@@ -512,17 +567,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "The provided ISBN was not valid. " +
+                "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        List.of(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a string literal, ISBN input - " +
@@ -539,17 +599,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "The provided ISBN was not valid. " +
+                "The ISBN should consist of 5 numbers and a '-' symbol in the format '####-#'.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     // tests isTitleInvalid method -> isBookValid -> addPaperBook
@@ -567,17 +632,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "The provided book title is not valid. " +
+                "The title should be at least 3 symbols long.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a string literal, title input length is longer then three symbols")
@@ -600,7 +670,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 HORROR,
-                Arrays.asList(STORY),
+                Collections.singletonList(STORY),
                 1);
 
         // Then
@@ -622,17 +692,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(georgeMartin);
 
+        String expectedMessage = "The provided summary is not valid. " +
+                "The summary must be at least 50 symbols in length.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a string literal, summary input length is long more than 50 symbols - Valid input")
@@ -655,7 +730,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 HORROR,
-                Arrays.asList(STORY),
+                Collections.singletonList(STORY),
                 1);
 
         // Then
@@ -674,17 +749,22 @@ public class BookControllerTests {
 
         List<Author> authors = new ArrayList<>();
 
+        String expectedMessage = "The provided author/authors is/are not valid. " +
+                "Please provide at least one, valid author to add a book to the library.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a list of authors, list is null")
@@ -695,24 +775,27 @@ public class BookControllerTests {
         String title = "Valid title";
         String summary = "Sample text for summary to reach valid length. Still too short so writing a few more symbols.";
 
-        List<Author> authors = null;
+        String expectedMessage = "The provided author/authors is/are not valid. " +
+                "Please provide at least one, valid author to add a book to the library.";
 
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
-                        authors,
+                        null,
                         HORROR,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for a list of authors, list is one author")
     @Test
-    void areAuthorsInvalid_ShouldThrowCustomException_ForInput_Authors_OneAuthorValid(){
+    void areAuthorsInvalid_ShouldReturnBookCreatedMessage_ForInput_Authors_OneAuthorValid(){
         // Given
         String isbn = "1111-1";
         String title = "Valid title";
@@ -730,7 +813,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 HORROR,
-                Arrays.asList(STORY),
+                Collections.singletonList(STORY),
                 1);
 
         // Then
@@ -739,7 +822,7 @@ public class BookControllerTests {
 
     @DisplayName("Inverted validation for a list of authors, list is two author")
     @Test
-    void areAuthorsInvalid_ShouldThrowCustomException_ForInput_Authors_TwoAuthorsValid(){
+    void areAuthorsInvalid_ShouldReturnBookCreatedMessage_ForInput_Authors_TwoAuthorsValid(){
         // Given
         String isbn = "1111-1";
         String title = "Valid title";
@@ -759,7 +842,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 HORROR,
-                Arrays.asList(STORY),
+                Collections.singletonList(STORY),
                 1);
 
         // Then
@@ -781,17 +864,22 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(elinPelin);
 
+        String expectedMessage = "The provided genre/s of the book are not valid. " +
+                "Please provide at least one valid book genre.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
                         summary,
                         authors,
                         null,
-                        Arrays.asList(STORY),
+                        Collections.singletonList(STORY),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for genre, input - valid genre")
@@ -815,7 +903,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 SCI_FI,
-                Arrays.asList(STORY),
+                Collections.singletonList(STORY),
                 1);
 
         // Then
@@ -854,7 +942,7 @@ public class BookControllerTests {
 
     @DisplayName("Inverted validation for book tags, input - null")
     @Test
-    void areBookTagsInvalid_ShouldReturnBookCreatedMessage_ForInput_Null(){
+    void areBookTagsInvalid_ShouldThrowCustomException_ForInput_Null(){
         // Given
         String isbn = "1111-1";
         String title = "Valid title";
@@ -865,9 +953,11 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(elinPelin);
 
+        String expectedMessage = "The provided book tags are not valid. " +
+                "Please provide at least one valid tag to add a book to the library.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
@@ -876,11 +966,14 @@ public class BookControllerTests {
                         SCI_FI,
                         null,
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     @DisplayName("Inverted validation for book tags, input - empty list")
     @Test
-    void areBookTagsInvalid_ShouldReturnBookCreatedMessage_ForInput_EmptyList(){
+    void areBookTagsInvalid_ShouldThrowCustomException_ForInput_EmptyList(){
         // Given
         String isbn = "1111-1";
         String title = "Valid title";
@@ -891,9 +984,11 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(elinPelin);
 
+        String expectedMessage = "The provided book tags are not valid. " +
+                "Please provide at least one valid tag to add a book to the library.";
+
         // When
-        // Then
-        Assertions.assertThrows(CustomException.class,
+        Exception exception = assertThrows(CustomException.class,
                 () -> bookController.addPaperBook(
                         isbn,
                         title,
@@ -902,13 +997,16 @@ public class BookControllerTests {
                         SCI_FI,
                         new ArrayList<>(),
                         1));
+
+        // Then
+        assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
     // areCopiesAtLeastOne method -> addPaperBook
 
     @DisplayName("Testing areCopiesAtLeastOne method in addPaperBookMethod, input 0")
     @Test
-    void areCopiesAtLeastOne_ShouldThrowCustomException_ForInput_Zero(){
+    void areCopiesAtLeastOne_ShouldReturnBookCreatedMessage_ForInput_Zero(){
         // Given
         String isbn = "1111-1";
         String title = "Valid title";
@@ -926,7 +1024,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 SCI_FI,
-                Arrays.asList(HOBBY),
+                Collections.singletonList(HOBBY),
                 0);
 
         // Then
@@ -953,7 +1051,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 SCI_FI,
-                Arrays.asList(HOBBY),
+                Collections.singletonList(HOBBY),
                 1);
 
         // Then
@@ -980,7 +1078,7 @@ public class BookControllerTests {
                 summary,
                 authors,
                 SCI_FI,
-                Arrays.asList(HOBBY),
+                Collections.singletonList(HOBBY),
                 100);
 
         // Then
@@ -1009,7 +1107,7 @@ public class BookControllerTests {
                 isbn,
                 title,
                 summary,
-                Collections.singletonList(elinPelin),
+                authors,
                 FANTASY,
                 Arrays.asList(STORY, CHILDREN),
                 readLink
@@ -1032,17 +1130,15 @@ public class BookControllerTests {
         List<Author> authors = new ArrayList<>();
         authors.add(elinPelin);
 
-        String readLink = null;
-
         // When
         String message = bookController.addEBook(
                 isbn,
                 title,
                 summary,
-                Collections.singletonList(elinPelin),
+                authors,
                 FANTASY,
                 Arrays.asList(STORY, CHILDREN),
-                readLink
+                null
         );
 
         // Then
@@ -1069,7 +1165,7 @@ public class BookControllerTests {
                 isbn,
                 title,
                 summary,
-                Collections.singletonList(elinPelin),
+                authors,
                 FANTASY,
                 Arrays.asList(STORY, CHILDREN),
                 readLink
@@ -1102,7 +1198,7 @@ public class BookControllerTests {
                 isbn,
                 title,
                 summary,
-                Collections.singletonList(elinPelin),
+                authors,
                 FANTASY,
                 Arrays.asList(STORY, CHILDREN),
                 readLink,
