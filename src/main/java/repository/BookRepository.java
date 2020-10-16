@@ -44,9 +44,7 @@ public class BookRepository {
      * @return Message to indicate what was the executed action.
      */
     public String borrowBook(String username, String ISBN) {
-        validateString(username, "Provided username is not valid.");
-
-        validateISBN(ISBN);
+        validateUsernameAndISBN(username, ISBN);
 
         if (!offeredBooks.containsKey(username)) {
             return "User " + username + " has no offered books yet.";
@@ -82,9 +80,7 @@ public class BookRepository {
      * @return Message corresponding to the applied action.
      */
     public String requestBook(String username, String ISBN) {
-        validateString(username, "Provided username is not valid.");
-
-        validateISBN(ISBN);
+        validateUsernameAndISBN(username, ISBN);
 
         if (bannedUsers.stream()
                 .map(UserRegistryForm::getUsername)
@@ -128,6 +124,10 @@ public class BookRepository {
      * @return Message corresponding to the action taken or the result of the checks.
      */
     public String postponeDueDate(String username, String ISBN) {
+        validateUsername(username);
+
+        validateUsername(ISBN);
+
         if (!borrowedBooks.containsKey(username)) {
             return "User " + username + " has no borrowed books.";
         }
@@ -166,6 +166,7 @@ public class BookRepository {
      * @return Message for the action taken. Book has been removed or not.
      */
     public String returnBookToLibrary(String username, String ISBN) {
+        validateUsernameAndISBN(username, ISBN);
 
         UserRegistryForm userBorrowForm = borrowedBooks.get(username).stream()
                 .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
@@ -200,9 +201,7 @@ public class BookRepository {
      * @return The due date of the form or null if not found.
      */
     public LocalDate getDueDate(String username, String ISBN, Map<String, List<UserRegistryForm>> formCollection) {
-        validateString(username, "Username is not valid.");
-
-        validateString(ISBN, "ISBN is missing or not valid.");
+        validateUsernameAndISBN(username, ISBN);
 
         validateFormCollection(formCollection, "Provided form collection is missing or empty.");
 
@@ -243,7 +242,7 @@ public class BookRepository {
      * @param bookISBN String representation of the ISBN - should be in format "####-#".
      */
     private void validateISBN(String bookISBN) {
-        validateString(bookISBN, "Provided ISBN is not a valid string.");
+        validateString(bookISBN, "ISBN is missing or not valid.");
 
         if (!Pattern.matches("^([0-9]){4}-[0-9]", bookISBN.trim())) {
             throw new CustomException("Provided ISBN does not match pattern ####-# (digits only)");
@@ -258,7 +257,21 @@ public class BookRepository {
      * Checks the provided string if not null, empty or blank
      * and if any are true throws exception, otherwise continues.
      *
-     * @param input        Unique user identifier.
+     * @param username Unique user identifier.
+     */
+    private void validateUsername(String username) {
+        validateString(username, "Provided string for username is not valid.");
+
+        if (username.length() < 2 || users.getUser(username) == null){
+            throw new CustomException("Provided username is less than 3 symbols or user don't exists.");
+        }
+    }
+
+    /**
+     * Checks if provided string is empty or null and throw exception with apropriate message
+     * if any is true.
+     *
+     * @param input        String literal to be validated.
      * @param errorMessage String literal explaining the error if the provided input is not valid.
      */
     private void validateString(String input, String errorMessage) {
@@ -306,6 +319,8 @@ public class BookRepository {
      * @return Place in queue for the user - int.
      */
     private int getPlaceInQueue(String username, String ISBN) {
+        validateUsernameAndISBN(username, ISBN);
+
         List<UserRegistryForm> list = requestedBooks.values().stream()
                 .filter(form -> form.getISBN().equals(ISBN))
                 .collect(Collectors.toList());
@@ -318,6 +333,12 @@ public class BookRepository {
         return list.indexOf(userRegistryForm);
     }
 
+    private void validateUsernameAndISBN(String username, String ISBN) {
+        validateUsername(username);
+
+        validateISBN(ISBN);
+    }
+
     /**
      * Checks if the book returned has been overdue and the user has a penalty for that.
      * If the book was overdue than remove the penalty for that book only.
@@ -326,6 +347,8 @@ public class BookRepository {
      * @param ISBN     Unique book identifier.
      */
     private void removeBanForThisPenalty(String username, String ISBN) {
+        validateUsernameAndISBN(username, ISBN);
+
         offeredBooks.get(username).removeIf(offeredBook -> offeredBook.getISBN().equals(ISBN));
     }
 
@@ -336,6 +359,8 @@ public class BookRepository {
      * @param ISBN     Unique book identifier.
      */
     private void addBookToUserHistory(String username, String ISBN) {
+        validateUsernameAndISBN(username, ISBN);
+
         users.getUser(username).getHistory().addUsedBook(books.get(ISBN));
     }
 
@@ -345,6 +370,8 @@ public class BookRepository {
      * false if is a PaperBook.
      */
     private boolean isNotPaperBook(String ISBN) {
+        validateISBN(ISBN);
+
         return !(books.get(ISBN) instanceof PaperBook);
     }
 

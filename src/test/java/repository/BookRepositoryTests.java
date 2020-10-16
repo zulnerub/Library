@@ -217,7 +217,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided ISBN is not a valid string.";
+        String expectedMessage = "ISBN is missing or not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook(username, null));
@@ -238,7 +238,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided ISBN is not a valid string.";
+        String expectedMessage = "ISBN is missing or not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook(username, ""));
@@ -259,7 +259,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided ISBN is not a valid string.";
+        String expectedMessage = "ISBN is missing or not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook(username, "  "));
@@ -280,7 +280,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook("   ", bookIsbn));
@@ -301,7 +301,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook("", bookIsbn));
@@ -322,7 +322,7 @@ public class BookRepositoryTests {
 
         bookRepository.requestBook(username, bookIsbn);
 
-        String expectedMessage = "Provided username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.borrowBook(null, bookIsbn));
@@ -357,10 +357,11 @@ public class BookRepositoryTests {
     @Test
     void removeOneCopyFromLibrary_ShouldDecreaseBookCopiesByOne_CompleteBookRequest() {
         //Given
+        userRepository.addUser(validUser);
         bookRepository.addBookToLibrary(gameOfThrones);
 
-        String username = "validUsername";
-        String bookISBN = "1234-5";
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
 
         int currentBookCopies = gameOfThrones.getCurrentlyAvailable();
 
@@ -402,9 +403,10 @@ public class BookRepositoryTests {
         gameOfThrones.setCurrentlyAvailable(0);
         bookRepository.addBookToLibrary(gameOfThrones);
 
-        String username = "validUsername";
+        userRepository.addUser(validUser);
+        String username = validUser.getUsername();
 
-        String expectedMessage = "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
+        String expectedMessage = "ISBN is missing or not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.requestBook(username, null));
@@ -420,10 +422,12 @@ public class BookRepositoryTests {
         gameOfThrones.setCurrentlyAvailable(0);
         bookRepository.addBookToLibrary(gameOfThrones);
 
-        String username = "validUsername";
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
         String bookISBN = "lk12-3";
 
-        String expectedMessage = "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
+        String expectedMessage = "Provided ISBN does not match pattern ####-# (digits only)";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.requestBook(username, bookISBN));
@@ -439,10 +443,12 @@ public class BookRepositoryTests {
         gameOfThrones.setCurrentlyAvailable(0);
         bookRepository.addBookToLibrary(gameOfThrones);
 
-        String username = "validUsername";
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
         String bookISBN = "111283";
 
-        String expectedMessage = "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
+        String expectedMessage = "Provided ISBN does not match pattern ####-# (digits only)";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.requestBook(username, bookISBN));
@@ -459,8 +465,10 @@ public class BookRepositoryTests {
         gameOfThrones.setCurrentlyAvailable(0);
         bookRepository.addBookToLibrary(gameOfThrones);
 
-        String username = "validUsername";
-        String bookISBN = "1234-5";
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
 
         String expectedMessage = "You are 1 in line for that book.\n" +
                 "Estimated date the book will become available: " + LocalDate.now().plusDays(21).toString();
@@ -478,6 +486,7 @@ public class BookRepositoryTests {
     void requestBook_ShouldReturnMessageFor_CompleteBookRequest() {
         //Given
         bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
 
         String username = "validUsername";
         String bookISBN = "1234-5";
@@ -497,8 +506,13 @@ public class BookRepositoryTests {
     @Test
     void getDueDate_ShouldThrowCustomException_NoRecordFoundForISBN() {
         //Given
-        String username = "validUsername";
-        String bookISBN = "1111-1";
+        bookRepository.addBookToLibrary(gameOfThrones);
+        bookRepository.addBookToLibrary(harryPotter);
+        userRepository.addUser(validUser);
+
+        String bookISBN = gameOfThrones.getISBN();
+        String username = validUser.getUsername();
+
         LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
@@ -506,10 +520,12 @@ public class BookRepositoryTests {
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
         formCollection.put(username, List.of(sampleValidForm));
 
+        String inputIsbn = harryPotter.getISBN();
+
         String expectedMessage = "No such book for this user.";
 
         //When
-        Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate(username, "0000-0", formCollection));
+        Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate(username, inputIsbn, formCollection));
 
         //Then
         assertTrue(expectedMessage.contains(exception.getMessage()));
@@ -519,8 +535,12 @@ public class BookRepositoryTests {
     @Test
     void getDueDate_ShouldThrowCustomException_NoRecordFoundForUsername() {
         //Given
-        String username = "validUsername";
-        String bookISBN = "1111-1";
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String bookISBN = gameOfThrones.getISBN();
+        String username = validUser.getUsername();
+
         LocalDate startDate = LocalDate.of(2000, 1, 1);
 
         UserRegistryForm sampleValidForm = new UserRegistryForm(username, bookISBN, startDate, 29);
@@ -528,7 +548,7 @@ public class BookRepositoryTests {
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
         formCollection.put(username, List.of(sampleValidForm));
 
-        String expectedMessage = "Username has no records.";
+        String expectedMessage = "Provided username is less than 3 symbols or user don't exists.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate("wrongUsername", bookISBN, formCollection));
@@ -537,12 +557,15 @@ public class BookRepositoryTests {
         assertTrue(expectedMessage.contains(exception.getMessage()));
     }
 
-    @DisplayName("call method getDueDate on collection of forms with username = blank string")
+    @DisplayName("call method getDueDate on collection of forms - forms is empty list")
     @Test
     void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionEmpty() {
         //Given
-        String username = "validUsername";
-        String bookISBN = "1111-1";
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
 
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
 
@@ -559,8 +582,11 @@ public class BookRepositoryTests {
     @Test
     void getDueDate_ShouldThrowCustomException_InvalidInput_FormCollectionNull() {
         //Given
-        String username = "validUsername";
-        String bookISBN = "1111-1";
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
 
         String expectedMessage = "Provided form collection is missing or empty.";
 
@@ -584,7 +610,7 @@ public class BookRepositoryTests {
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
         formCollection.put(username, List.of(sampleValidForm));
 
-        String expectedMessage = "Username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate("  ", "1111-1", formCollection));
@@ -606,7 +632,7 @@ public class BookRepositoryTests {
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
         formCollection.put(username, List.of(sampleValidForm));
 
-        String expectedMessage = "Username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate("", "1111-1", formCollection));
@@ -628,7 +654,7 @@ public class BookRepositoryTests {
         Map<String, List<UserRegistryForm>> formCollection = new LinkedHashMap<>();
         formCollection.put(username, List.of(sampleValidForm));
 
-        String expectedMessage = "Username is not valid.";
+        String expectedMessage = "Provided string for username is not valid.";
 
         //When
         Exception exception = assertThrows(CustomException.class, () -> bookRepository.getDueDate(null, "1111-1", formCollection));
