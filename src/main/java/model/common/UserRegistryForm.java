@@ -17,7 +17,7 @@ public class UserRegistryForm {
         this.ISBN = ISBN;
     }
 
-    public UserRegistryForm(String username, String ISBN,LocalDate startDate, int endTime) {
+    public UserRegistryForm(String username, String ISBN, LocalDate startDate, int endTime) {
         this(username, ISBN);
         this.startDate = startDate;
         this.endDate = startDate.plusDays(endTime);
@@ -60,10 +60,8 @@ public class UserRegistryForm {
 
     /**
      * Extends the date when the book has to be returned to the library by set amount of days.
-     *
-     * @param days Amount of days with which to postpone the return of the book.
      */
-    public void extendDueDate(int days) {
-        endDate = endDate.plusDays(days);
+    public void extendDueDate() {
+        endDate = endDate.plusDays(7);
     }
 }

@@ -123,10 +123,8 @@ public class BookRepository {
      * @param ISBN     Unique identifier of book.
      * @return Message corresponding to the action taken or the result of the checks.
      */
-    public String postponeDueDate(String username, String ISBN) {
-        validateUsername(username);
-
-        validateUsername(ISBN);
+    public String postponeDueDateWithSevenDays(String username, String ISBN) {
+        validateUsernameAndISBN(username, ISBN);
 
         if (!borrowedBooks.containsKey(username)) {
             return "User " + username + " has no borrowed books.";
@@ -144,12 +142,12 @@ public class BookRepository {
         LocalDate rentedOn = userRegistryForm.getStartDate();
         LocalDate dueDate = userRegistryForm.getEndDate();
 
-        if (dueDate.plusDays(1).isAfter(rentedOn.plusDays(28))) {
+        if (dueDate.plusDays(7).isAfter(rentedOn.plusDays(28))) {
             return "You have already postponed your due date with 14 days. " +
                     "The date will not be postponed.";
         }
 
-        userRegistryForm.extendDueDate(1);
+        userRegistryForm.extendDueDate();
 
         return "Due date postponed to: " + userRegistryForm.getEndDate().toString();
 
@@ -168,10 +166,11 @@ public class BookRepository {
     public String returnBookToLibrary(String username, String ISBN) {
         validateUsernameAndISBN(username, ISBN);
 
-        UserRegistryForm userBorrowForm = borrowedBooks.get(username).stream()
-                .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
-                .findFirst()
-                .orElse(null);
+
+        UserRegistryForm userBorrowForm = borrowedBooks.containsKey(username) ?
+                borrowedBooks.get(username).stream()
+                        .filter(borrowForm -> borrowForm.getISBN().equals(ISBN))
+                        .findFirst().orElse(null) : null;
 
         if (userBorrowForm == null) {
             return "The provided user doesn't exist or has not borrowed any book with that ISBN.";
@@ -181,15 +180,17 @@ public class BookRepository {
 
         borrowedBooks.get(username).remove(userBorrowForm);
 
-        bannedUsers.removeIf(userBanForm ->
-                (
-                        userBanForm.getUsername().equalsIgnoreCase(username)
-                                && userBanForm.getISBN().equals(ISBN)
-                ));
+        if (borrowedBooks.get(username).size() == 0) {
+            borrowedBooks.remove(username);
+        }
 
-        removeBanForThisPenalty(username, ISBN);
+        String result = "Book successfully returned to the library.";
 
-        return "Book successfully returned to the library";
+        if (removeBanForThisPenalty(username, ISBN)) {
+            result += "\nYou had penalty for this book. Penalty removed.";
+        }
+
+        return result;
     }
 
     /**
@@ -262,7 +263,7 @@ public class BookRepository {
     private void validateUsername(String username) {
         validateString(username, "Provided string for username is not valid.");
 
-        if (username.length() < 2 || users.getUser(username) == null){
+        if (username.length() < 2 || users.getUser(username) == null) {
             throw new CustomException("Provided username is less than 3 symbols or user don't exists.");
         }
     }
@@ -333,6 +334,12 @@ public class BookRepository {
         return list.indexOf(userRegistryForm);
     }
 
+    /**
+     * Calls two methods each for validating the username and the isbn of the book.
+     *
+     * @param username Unique identifier of the user.
+     * @param ISBN     Unique identifier of the book
+     */
     private void validateUsernameAndISBN(String username, String ISBN) {
         validateUsername(username);
 
@@ -346,10 +353,14 @@ public class BookRepository {
      * @param username Unique user identifier.
      * @param ISBN     Unique book identifier.
      */
-    private void removeBanForThisPenalty(String username, String ISBN) {
+    private boolean removeBanForThisPenalty(String username, String ISBN) {
         validateUsernameAndISBN(username, ISBN);
 
-        offeredBooks.get(username).removeIf(offeredBook -> offeredBook.getISBN().equals(ISBN));
+        return bannedUsers.removeIf(userBanForm ->
+                (
+                        userBanForm.getUsername().equalsIgnoreCase(username)
+                                && userBanForm.getISBN().equals(ISBN)
+                ));
     }
 
     /**
@@ -362,17 +373,6 @@ public class BookRepository {
         validateUsernameAndISBN(username, ISBN);
 
         users.getUser(username).getHistory().addUsedBook(books.get(ISBN));
-    }
-
-    /**
-     * @param ISBN Unique identifier of book.
-     * @return true if given book is not a PaperBook or
-     * false if is a PaperBook.
-     */
-    private boolean isNotPaperBook(String ISBN) {
-        validateISBN(ISBN);
-
-        return !(books.get(ISBN) instanceof PaperBook);
     }
 
     /**
@@ -465,5 +465,26 @@ public class BookRepository {
         paperBook.setCurrentlyAvailable(
                 paperBook.getCurrentlyAvailable() - 1
         );
+    }
+
+    /**
+     * @return Gets the amount of currently borrowed books.
+     */
+    public int getBorrowedBooksSize() {
+        return borrowedBooks.size();
+    }
+
+    /**
+     * @return Gets the amount of currently offered books.
+     */
+    public int getOfferedBooksSize() {
+        return offeredBooks.size();
+    }
+
+    /**
+     * @return Gets the amount of currently requested books.
+     */
+    public int getRequestedBooksSize() {
+        return requestedBooks.size();
     }
 }

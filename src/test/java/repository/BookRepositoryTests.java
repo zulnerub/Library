@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.*;
 
-import static enums.BookGenre.FANTASY;
-import static enums.BookGenre.SCI_FI;
+import static enums.BookGenre.*;
 import static enums.BookTags.*;
 import static enums.BookTags.LEARNING;
 import static enums.Gender.MALE;
@@ -66,6 +65,246 @@ public class BookRepositoryTests {
             Collections.singletonList(LEARNING),
             "http://earthstood.online.read.com",
             "http://stillearth.online.download.com");
+
+    @DisplayName("testing method removeBookForThisPenalty - " +
+            "should return a message that the username has no borrowed books or " +
+            "that the user has not borrowed this book. For book not borrowed by user.")
+    @Test
+    void returnBookToLibrary_ShouldReturnMessageBookNotFound_InputBookNotBorrowed(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        bookRepository.addBookToLibrary(harryPotter);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        String inputISBN = harryPotter.getISBN();
+
+        String expectedMessage = "The provided user doesn't exist or has not borrowed any book with that ISBN.";
+
+        //When
+        String actualMessage = bookRepository.returnBookToLibrary(username, inputISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method removeBookForThisPenalty - " +
+            "should return a message that the username has no borrowed books or " +
+            "that the user has not borrowed this book. For user having no records.")
+    @Test
+    void returnBookToLibrary_ShouldReturnMessageBookNotFound_InputUserHasNoRecords(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+
+        String expectedMessage = "The provided user doesn't exist or has not borrowed any book with that ISBN.";
+
+        //When
+        String actualMessage = bookRepository.returnBookToLibrary(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method returnBookToLibrary - " +
+            "should add a copy of the returned book to the library")
+    @Test
+    void returnBookToLibrary_ShouldAddOneCopyOfBookToLibrary(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        PaperBook returnedBook = (PaperBook) bookRepository.getAllBooksInLibrary().stream()
+                .filter(book -> book.getISBN().equals(bookISBN))
+                .findFirst().orElse(null);
+
+        int expectedSize = 5;
+
+        //When
+        bookRepository.returnBookToLibrary(username, bookISBN);
+
+        //Then
+        assertEquals(expectedSize, bookRepository.freeCopies(returnedBook));
+    }
+
+    @DisplayName("testing method removeBookForThisPenalty - should remove record of borrowed book")
+    @Test
+    void returnBookToLibrary_ShouldRemoveBorrowRecord(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        int expectedSize = 0;
+
+        //When
+        bookRepository.returnBookToLibrary(username, bookISBN);
+
+        //Then
+        assertEquals(expectedSize, bookRepository.getBorrowedBooksSize());
+    }
+
+    @DisplayName("testing method removeBookForThisPenalty - should Print message for remove penalty")
+    @Test
+    void removeBanForThisPenalty_ShouldReturnMessageIndicatingPenaltyWasRemoved(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        bookRepository.changeDay(15);
+
+        String expectedMessage = "Book successfully returned to the library." +
+                "\nYou had penalty for this book. Penalty removed.";
+
+        //When
+        String actualMessage = bookRepository.returnBookToLibrary(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method returnBookToLibrary - should return success message with valid input")
+    @Test
+    void returnBookToLibrary_ShouldReturnMessageForSuccessfullyReturningBook(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();;
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        String expectedMessage = "Book successfully returned to the library.";
+
+        //When
+        String actualMessage = bookRepository.returnBookToLibrary(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method postponeDueDate - should return correct message for user not having any books to return")
+    @Test
+    void postponeDueDate_ShouldReturnMessageNoBooksToReturnForThatUser(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
+
+        String expectedMessage = "User " + username + " has no borrowed books.";
+
+        //When
+        String actualMessage = bookRepository.postponeDueDateWithSevenDays(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method postponeDueDate - should return correct message for not finding" +
+            "book with that isbn for the user to return.")
+    @Test
+    void postponeDueDate_ShouldReturnMessageNoBookWithThisISBNToReturn(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        bookRepository.addBookToLibrary(harryPotter);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        String inputISBN = harryPotter.getISBN();
+
+        String expectedMessage = "You have no book to return with ISBN " + inputISBN;
+
+        //When
+        String actualMessage = bookRepository.postponeDueDateWithSevenDays(username, inputISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method postponeDueDate - should return correct message for refused postponement")
+    @Test
+    void postponeDueDate_ShouldReturnMessageAlreadyPostponedToLimit_ValidInput(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        bookRepository.postponeDueDateWithSevenDays(username, bookISBN);
+        bookRepository.postponeDueDateWithSevenDays(username, bookISBN);
+
+        String expectedMessage = "You have already postponed your due date with 14 days. " +
+                "The date will not be postponed.";
+
+        //When
+        String actualMessage = bookRepository.postponeDueDateWithSevenDays(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @DisplayName("testing method postponeDueDate - should return correct message with the new date")
+    @Test
+    void postponeDueDate_ShouldReturnSuccessfulMessage_ValidInput(){
+        //Given
+        bookRepository.addBookToLibrary(gameOfThrones);
+        userRepository.addUser(validUser);
+
+        String username = validUser.getUsername();
+        String bookISBN = gameOfThrones.getISBN();
+
+        bookRepository.requestBook(username, bookISBN);
+        bookRepository.borrowBook(username, bookISBN);
+
+        String expectedMessage = "Due date postponed to: " + LocalDate.now().plusDays(21).toString();
+
+        //When
+        String actualMessage = bookRepository.postponeDueDateWithSevenDays(username, bookISBN);
+
+        //Then
+        assertEquals(expectedMessage, actualMessage);
+
+    }
 
     @DisplayName("method addBookToUserHistory should return empty list.")
     @Test
