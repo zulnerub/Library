@@ -7,6 +7,7 @@ import model.common.UserRegistryForm;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -43,13 +44,9 @@ public class BookRepository {
      * @return Message to indicate what was the executed action.
      */
     public String borrowBook(String username, String ISBN) {
+        validateString(username, "Provided username is not valid.");
 
-        if (bannedUsers.stream()
-                .map(UserRegistryForm::getUsername)
-                .collect(Collectors.toList())
-                .contains(username)) {
-            return "User " + username + " is banned form the library for delayed books!";
-        }
+        validateISBN(ISBN);
 
         if (!offeredBooks.containsKey(username)) {
             return "User " + username + " has no offered books yet.";
@@ -85,8 +82,15 @@ public class BookRepository {
      * @return Message corresponding to the applied action.
      */
     public String requestBook(String username, String ISBN) {
-        if (isNotPaperBook(ISBN)) {
-            return "The provided ISBN is not correct or the book associated with the ISBN is not physical.";
+        validateString(username, "Provided username is not valid.");
+
+        validateISBN(ISBN);
+
+        if (bannedUsers.stream()
+                .map(UserRegistryForm::getUsername)
+                .collect(Collectors.toList())
+                .contains(username)) {
+            return "User " + username + " is banned form the library for delayed books!";
         }
 
         PaperBook currentBook = ((PaperBook) books.get(ISBN));
@@ -202,7 +206,7 @@ public class BookRepository {
 
         validateFormCollection(formCollection, "Provided form collection is missing or empty.");
 
-        if (!formCollection.containsKey(username)){
+        if (!formCollection.containsKey(username)) {
             throw new CustomException("Username has no records.");
         }
 
@@ -230,6 +234,23 @@ public class BookRepository {
     private void validateFormCollection(Map<String, List<UserRegistryForm>> formCollection, String errorMessage) {
         if (formCollection == null || formCollection.isEmpty()) {
             throw new CustomException(errorMessage);
+        }
+    }
+
+    /**
+     * Validates the provided ISBN for the new book.
+     *
+     * @param bookISBN String representation of the ISBN - should be in format "####-#".
+     */
+    private void validateISBN(String bookISBN) {
+        validateString(bookISBN, "Provided ISBN is not a valid string.");
+
+        if (!Pattern.matches("^([0-9]){4}-[0-9]", bookISBN.trim())) {
+            throw new CustomException("Provided ISBN does not match pattern ####-# (digits only)");
+        }
+
+        if (books.values().stream().noneMatch(book -> book.getISBN().equals(bookISBN.trim()))) {
+            throw new CustomException("No paper book with this ISBN exist in the library.");
         }
     }
 
@@ -335,8 +356,8 @@ public class BookRepository {
      * - Making available books not borrowed by the users after being offered to them 3 days ago.
      * - Offering books to users who are in line if a book is made available and if they are not in the banned list.
      */
-    public void changeDay() {
-        currentDate = LocalDate.now().plusDays(1);
+    public void changeDay(int days) {
+        currentDate = LocalDate.now().plusDays(days);
 
         syncBorrowedBooks();
         syncOfferedBooks();
