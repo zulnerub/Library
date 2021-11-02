@@ -2,15 +2,23 @@ package model.user.impl;
 
 import model.user.Person;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 
 /**
  * Creates an object Author to complement the {@Book} objects.
  * Stores Dates of birth and death as well as common fields and methods from Person
  */
+@XmlRootElement(name = "author")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Author extends Person {
 
+    @XmlAttribute(name = "date-of-birth")
     private LocalDate dateOfBirth;
+    @XmlAttribute(name = "date-of-death")
     private LocalDate dateOfDeath;
 
     public Author(String firstName, String lastName, LocalDate dateOfBirth, LocalDate dateOfDeath) {

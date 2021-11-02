@@ -6,13 +6,20 @@ import model.book.Book;
 import model.book.Electronic;
 import model.user.impl.Author;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Object that represents an online book with possibility to be read online.
  */
+@XmlRootElement(name = "ebook")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class EBook extends Book implements Electronic {
 
+    @XmlAttribute(name = "online-link")
     private String onlineLink;
 
     public EBook(String ISBN, String title, String summary,

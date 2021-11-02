@@ -7,14 +7,22 @@ import model.book.Downloadable;
 import model.book.Electronic;
 import model.user.impl.Author;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Object that represents an online book with possibility to be read and downloaded.
  */
+@XmlRootElement(name = "downloadable-ebook")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DownloadableEBook extends Book implements Electronic, Downloadable {
 
+    @XmlAttribute(name = "online-link")
     private String onlineLink;
+    @XmlAttribute(name = "download-link")
     private String downloadLink;
 
     public DownloadableEBook(String ISBN, String title, String summary,

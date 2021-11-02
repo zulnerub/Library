@@ -4,6 +4,7 @@ import enums.BookTags;
 import enums.BookGenre;
 import model.user.impl.Author;
 
+import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,11 +14,17 @@ import java.util.stream.Collectors;
  */
 public abstract class Book {
 
+    @XmlAttribute(name = "isbn")
     private String ISBN;
+    @XmlAttribute(name = "title")
     private String title;
+    @XmlAttribute(name = "summary")
     private String summary;
+    @XmlAttribute(name = "genre")
     private BookGenre genre;
+    @XmlElement(name = "authors")
     private List<Author> authors;
+    @XmlElement(name = "tags")
     private List<BookTags> tags;
 
     public Book(String ISBN, String title, String summary,
